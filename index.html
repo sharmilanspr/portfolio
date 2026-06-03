@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en" x-data="app()" x-init="init()" :class="{ 'dark': dark }">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sharmilan.R — Music Producer & Composer</title>
+    <meta name="description" content="Sharmilan.R — Music Producer, Music Director & Composer creating cinematic soundtracks, emotional melodies and immersive sound design." />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ['PT Sans', 'sans-serif'],
+              body: ['DM Sans', 'sans-serif']
+            },
+            colors: {
+              accent: '#8B5CF6',
+              'accent-light': '#A78BFA'
+            }
+          }
+        }
+      }
+    </script>
+
+    <style>
+
+      *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+      }
+
+      html{
+        scroll-behavior:smooth;
+      }
+
+      body{
+        font-family:'DM Sans',sans-serif;
+        background:
+        radial-gradient(circle at top right,#3b076430 0%,transparent 30%),
+        radial-gradient(circle at bottom left,#1e1b4b40 0%,transparent 30%),
+        #000;
+        color:white;
+        overflow-x:hidden;
+        width:100%;
+      }
+
+      img{
+        max-width:100%;
+        display:block;
+      }
+
+      h1,h2,h3,h4{
+        font-family:'PT Sans',sans-serif;
+        letter-spacing:-0.03em;
+      }
+
+      body::before{
+        content:'';
+        position:fixed;
+        inset:0;
+        pointer-events:none;
+        opacity:.25;
+        z-index:0;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+      }
+
+      .reveal{
+        opacity:0;
+        transform:translateY(40px);
+        transition:all .8s cubic-bezier(.4,0,.2,1);
+      }
+
+      .reveal.in{
+        opacity:1;
+        transform:none;
+      }
+
+      .card{
+        background:rgba(24,24,27,.6);
+        backdrop-filter:blur(10px);
+        border:1px solid rgba(255,255,255,.06);
+        transition:.3s;
+      }
+
+      .card:hover{
+        transform:translateY(-6px);
+        box-shadow:0 0 50px rgba(139,92,246,.18);
+        border-color:#8B5CF6;
+      }
+
+      .glow{
+        box-shadow:0 0 40px rgba(139,92,246,.35);
+      }
+
+      .navlink{
+        position:relative;
+      }
+
+      .navlink::after{
+        content:'';
+        position:absolute;
+        left:0;
+        bottom:-4px;
+        width:0;
+        height:2px;
+        background:#8B5CF6;
+        transition:.3s;
+      }
+
+      .navlink:hover::after{
+        width:100%;
+      }
+
+      ::-webkit-scrollbar{
+        width:5px;
+      }
+
+      ::-webkit-scrollbar-thumb{
+        background:#8B5CF6;
+        border-radius:999px;
+      }
+
+      /* Mobile: tighter card text */
+      @media (max-width: 640px) {
+        .works-card-title {
+          font-size: 1.1rem !important;
+        }
+        .works-card-desc {
+          font-size: 0.8rem !important;
+          margin-bottom: 0.75rem !important;
+        }
+        .works-card-body {
+          padding: 0.875rem !important;
+        }
+        .works-card-badge {
+          font-size: 0.65rem !important;
+          padding: 2px 8px !important;
+        }
+        .works-card-link {
+          font-size: 0.75rem !important;
+        }
+        .works-card-img {
+          height: 140px !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="dark">
+  <!-- NAVBAR -->
+    <header class="fixed top-0 inset-x-0 z-50 backdrop-blur-xl bg-black/40 border-b border-white/5">
+      <nav class="max-w-7xl mx-auto px-5 sm:px-6 h-20 flex items-center justify-between">
+        <a href="#" class="text-xl sm:text-2xl font-bold tracking-tight">
+          SHARMILAN<span class="text-accent"> .R</span>
+        </a>
+        <div class="hidden lg:flex items-center gap-10 text-sm text-zinc-400">
+          <a href="#about" class="navlink hover:text-white transition">About</a>
+          <a href="#services" class="navlink hover:text-white transition">Services</a>
+          <a href="#works" class="navlink hover:text-white transition">Works</a>
+          <a href="#contact" class="navlink hover:text-white transition">Contact</a>
+        </div>
+
+        <a href="#contact" class="hidden lg:inline-flex bg-accent hover:bg-accent-light transition px-6 py-3 rounded-full text-sm font-medium glow">
+          Let's Create
+        </a>
+
+        <button 
+          @click="mobile = !mobile"
+          class="lg:hidden text-3xl text-white"
+        >
+          ☰
+        </button>
+      </nav>
+
+      <!-- MOBILE MENU -->
+      <div
+        x-show="mobile"
+        x-transition
+        class="lg:hidden bg-black/95 border-t border-white/5 px-6 py-6"
+      >
+        <div class="flex flex-col gap-5 text-zinc-300 text-lg">
+          <a href="#about">About</a>
+          <a href="#services">Services</a>
+          <a href="#works">Works</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="min-h-screen flex items-center relative overflow-hidden pt-32 pb-20">
+      <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-700/20 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-700/20 rounded-full blur-3xl"></div>
+      <div class="max-w-7xl mx-auto px-5 sm:px-6 relative z-10">
+
+        <div class="grid lg:grid-cols-2 gap-14 lg:gap-16 items-center">
+
+          <div class="text-center lg:text-left">
+            <p class="reveal uppercase tracking-[0.3em] text-accent text-xs sm:text-sm mb-6">
+              Music Producer • Composer • Music Director
+            </p>
+            <h1 class="reveal text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-8">
+              SHARMILAN
+              <span class="text-accent">.R</span>
+            </h1>
+            <p class="reveal text-zinc-400 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mb-10 mx-auto lg:mx-0">
+              Creating cinematic soundtracks, emotional melodies and immersive sound design blending orchestral emotion with modern production.
+            </p>
+            <div class="reveal flex flex-wrap justify-center lg:justify-start gap-4 mb-14">
+              <a href="#works" class="bg-white text-black px-7 sm:px-8 py-4 rounded-full font-medium hover:bg-zinc-200 transition">
+                Listen To My Work
+              </a>
+              <a href="#contact" class="border border-zinc-700 px-7 sm:px-8 py-4 rounded-full hover:border-accent hover:text-accent transition">
+                Hire Me
+              </a>
+            </div>
+          </div>
+
+          <div class="reveal flex justify-center">
+            <div class="relative">
+              <div class="absolute inset-0 bg-accent blur-[120px] opacity-30"></div>
+              <img
+              src="Profile_Pic.jpeg"
+              class="relative z-10 w-[260px] sm:w-[320px] md:w-[380px] aspect-square rounded-[35px] object-cover border border-white/10 shadow-2xl"
+              alt="Sharmilan.R"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="py-24 md:py-32 relative z-10">
+      <div class="max-w-7xl mx-auto px-5 sm:px-6">
+        <div class="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
+          <div class="reveal">
+            <img
+              src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1200&auto=format&fit=crop"
+              class="rounded-[30px] md:rounded-[40px] border border-white/10 w-full"
+              alt=""
+            />
+          </div>
+          <div>
+            <p class="reveal uppercase tracking-[0.3em] text-accent text-sm mb-6">About Me</p>
+            <h2 class="reveal text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-8">
+              Music That Feels Cinematic
+            </h2>
+            <p class="reveal text-zinc-400 text-lg leading-relaxed mb-6">
+              I'm Sharmilan.R, a music producer and composer focused on cinematic storytelling through sound.
+            </p>
+            <p class="reveal text-zinc-400 text-lg leading-relaxed mb-10">
+              From emotional piano themes to massive trailer arrangements, I build immersive musical experiences designed for films, songs and visual storytelling.
+            </p>
+            <div class="reveal flex flex-wrap gap-3">
+              <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5">Ableton Live</span>
+              <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5">Film Scoring</span>
+              <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5">Sound Design</span>
+              <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5">Orchestration</span>
+              <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5">Mixing</span>
+              <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5">Mastering</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services" class="py-24 md:py-32">
+      <div class="max-w-7xl mx-auto px-5 sm:px-6">
+        <div class="mb-20 text-center">
+          <p class="uppercase tracking-[0.3em] text-accent text-sm mb-5">Services</p>
+          <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold">What I Create</h2>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div class="card rounded-[30px] p-8 md:p-10 reveal">
+            <div class="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-8 text-2xl">🎼</div>
+            <h3 class="text-2xl md:text-3xl font-bold mb-5">Music Production</h3>
+            <p class="text-zinc-400 leading-relaxed">Cinematic arrangements, orchestral layers and emotional soundscapes crafted with industry-standard quality.</p>
+          </div>
+          <div class="card rounded-[30px] p-8 md:p-10 reveal">
+            <div class="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-8 text-2xl">🎬</div>
+            <h3 class="text-2xl md:text-3xl font-bold mb-5">Film Scoring</h3>
+            <p class="text-zinc-400 leading-relaxed">Background scores for films, trailers and short films designed to elevate emotion and storytelling.</p>
+          </div>
+          <div class="card rounded-[30px] p-8 md:p-10 reveal">
+            <div class="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-8 text-2xl">🎧</div>
+            <h3 class="text-2xl md:text-3xl font-bold mb-5">Sound Design</h3>
+            <p class="text-zinc-400 leading-relaxed">Unique sonic textures and cinematic atmospheres using advanced synthesis and processing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORKS -->
+    <section id="works" class="py-32 relative">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="mb-20">
+          <p class="uppercase tracking-[0.3em] text-accent text-sm mb-5">Portfolio</p>
+          <h2 class="text-5xl md:text-6xl font-bold">Featured Music</h2>
+        </div>
+
+        <!-- 2 cols on mobile, 3 on desktop -->
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+
+          <!-- CARD 1 — Orangattuma (Spotify) -->
+          <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
+            <img
+              src="https://img.youtube.com/vi/_y5LzuGFH7I/hqdefault.jpg"
+              class="works-card-img w-full object-cover"
+              style="height:180px;"
+              alt="Orangattuma"
+            />
+            <div class="works-card-body p-4 sm:p-6">
+              <div class="flex flex-wrap items-center gap-2 mb-3">
+                <span class="works-card-badge px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">Spotify</span>
+                <span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Single</span>
+              </div>
+              <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Orangattuma</h3>
+              <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Recently released song. I produced the music for it.</p>
+              <a
+                href="https://open.spotify.com/track/0rah3bdcdXIwmCyZsussew?si=99a731f5c7da4d1c"
+                target="_blank"
+                class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm"
+              >
+                Listen on Spotify →
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 2 — Natchathiram Yengu Selgiratho (YouTube: OHMiYdZ6jv4) -->
+          <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
+            <img
+              src="https://img.youtube.com/vi/OHMiYdZ6jv4/hqdefault.jpg"
+              class="works-card-img w-full object-cover"
+              style="height:180px;"
+              alt="Natchathiram Yengu Selgiratho"
+            />
+            <div class="works-card-body p-4 sm:p-6">
+              <div class="flex flex-wrap items-center gap-2 mb-3">
+                <span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span>
+                <span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Shortfilm</span>
+              </div>
+              <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Natchathiram Yengu Selgiratho</h3>
+              <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Background score and music production for the shortfilm.</p>
+              <a
+                href="https://youtu.be/OHMiYdZ6jv4?si=wQaZZXe1xpcAD9t2"
+                target="_blank"
+                class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm"
+              >
+                Watch on YouTube →
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 3 — Double X (YouTube: bf8Du4PW_2Q) -->
+          <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
+            <img
+              src="https://img.youtube.com/vi/bf8Du4PW_2Q/hqdefault.jpg"
+              class="works-card-img w-full object-cover"
+              style="height:180px;"
+              alt="Double X"
+            />
+            <div class="works-card-body p-4 sm:p-6">
+              <div class="flex flex-wrap items-center gap-2 mb-3">
+                <span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span>
+                <span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Shortfilm</span>
+              </div>
+              <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Double X</h3>
+              <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Cinematic background score and emotional music production.</p>
+              <a
+                href="https://youtu.be/bf8Du4PW_2Q?si=NxLWW3gGaBf41jl4"
+                target="_blank"
+                class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm"
+              >
+                Watch on YouTube →
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 4 — Trailer Score -->
+          <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
+            <img
+              src="https://images.unsplash.com/photo-1501612780327-45045538702b?q=80&w=800&auto=format&fit=crop"
+              class="works-card-img w-full object-cover"
+              style="height:180px;"
+              alt="Trailer Score"
+            />
+            <div class="works-card-body p-4 sm:p-6">
+              <div class="flex flex-wrap items-center gap-2 mb-3">
+                <span class="works-card-badge px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs">Cinematic</span>
+              </div>
+              <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Trailer Score</h3>
+              <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Epic orchestral and hybrid cinematic sound design.</p>
+              <a href="#" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">
+                View Project →
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 5 — Emotional Theme -->
+          <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
+            <img
+              src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=800&auto=format&fit=crop"
+              class="works-card-img w-full object-cover"
+              style="height:180px;"
+              alt="Emotional Theme"
+            />
+            <div class="works-card-body p-4 sm:p-6">
+              <div class="flex flex-wrap items-center gap-2 mb-3">
+                <span class="works-card-badge px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs">Music Production</span>
+              </div>
+              <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Emotional Theme</h3>
+              <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Melodic orchestral arrangement with cinematic atmosphere.</p>
+              <a href="#" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">
+                Listen →
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 6 — Hybrid Soundtrack -->
+          <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
+            <img
+              src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=800&auto=format&fit=crop"
+              class="works-card-img w-full object-cover"
+              style="height:180px;"
+              alt="Hybrid Soundtrack"
+            />
+            <div class="works-card-body p-4 sm:p-6">
+              <div class="flex flex-wrap items-center gap-2 mb-3">
+                <span class="works-card-badge px-3 py-1 rounded-full bg-pink-500/20 text-pink-400 text-xs">Sound Design</span>
+              </div>
+              <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Hybrid Soundtrack</h3>
+              <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Modern synth textures blended with orchestral scoring.</p>
+              <a href="#" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">
+                Explore →
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ARTIST SECTION -->
+    <section class="py-32 relative">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="mt-24">
+          <div class="card rounded-[40px] p-12 md:p-16 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-accent/10 blur-3xl rounded-full"></div>
+            <div class="grid md:grid-cols-2 gap-12 items-center relative z-10">
+              <div>
+                <p class="uppercase tracking-[0.3em] text-accent text-sm mb-5">Artist Profile</p>
+                <h3 class="text-5xl font-bold leading-tight mb-6">SHARMILAN.R</h3>
+                <p class="text-zinc-400 leading-relaxed text-lg mb-8">
+                  Music Producer, Composer and Music Director crafting cinematic soundtracks, emotional melodies and immersive sound design for modern audiences.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                  <a
+                    href="https://open.spotify.com/artist/5bBOz5i5P5GIcB9NUiGTCk?si=lR5R__nETgGfa0lfT_VdcA"
+                    target="_blank"
+                    class="bg-green-500 hover:bg-green-400 transition px-7 py-3 rounded-full text-black font-medium"
+                  >
+                    Spotify Artist
+                  </a>
+                </div>
+              </div>
+              <div class="flex justify-center">
+                <div class="relative">
+                  <div class="absolute inset-0 bg-accent blur-[100px] opacity-30"></div>
+                  <img
+                    src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=1200&auto=format&fit=crop"
+                    class="relative z-10 w-[340px] h-[340px] rounded-[35px] object-cover border border-white/10"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="py-24 md:py-32">
+      <div class="max-w-5xl mx-auto px-5 sm:px-6">
+        <div class="card rounded-[30px] md:rounded-[40px] p-10 md:p-20 text-center relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-80 h-80 bg-accent/20 rounded-full blur-3xl"></div>
+          <p class="uppercase tracking-[0.3em] text-accent text-sm mb-5 relative z-10">Contact</p>
+          <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-8 relative z-10">
+            Let's Create Something Cinematic
+          </h2>
+          <p class="text-zinc-400 text-lg leading-relaxed max-w-2xl mx-auto mb-12 relative z-10">
+            Open for film scoring, music production, trailer music and sound design projects.
+          </p>
+          <div class="relative z-10 flex flex-col sm:flex-row justify-center gap-5">
+            <a
+              href="mailto:sharmilan2003spr@gmail.com"
+              class="bg-accent hover:bg-accent-light transition px-8 py-4 rounded-full font-medium"
+            >
+              Email Me
+            </a>
+            <a
+              href="https://instagram.com/r_sharmilan"
+              target="_blank"
+              class="border border-zinc-700 hover:border-accent px-8 py-4 rounded-full transition"
+            >
+              Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/5 py-10">
+      <div class="max-w-7xl mx-auto px-5 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-5">
+        <p class="text-zinc-500 text-sm text-center">© 2026 SHARMILAN.R — Music Producer & Composer</p>
+        <p class="text-zinc-600 text-sm text-center">SR records ✨</p>
+      </div>
+    </footer>
+
+    <script>
+      function app(){
+        return{
+          dark:true,
+          mobile:false,
+          init(){
+            const io = new IntersectionObserver(entries=>{
+              entries.forEach(entry=>{
+                if(entry.isIntersecting){
+                  entry.target.classList.add('in')
+                }
+              })
+            },{threshold:0.15})
+            document.querySelectorAll('.reveal').forEach(el=>io.observe(el))
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
