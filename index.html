@@ -32,132 +32,139 @@
     </script>
 
     <style>
-
-      *{
-        margin:0;
-        padding:0;
-        box-sizing:border-box;
-      }
-
-      html{
-        scroll-behavior:smooth;
-      }
-
+      *{margin:0;padding:0;box-sizing:border-box;}
+      html{scroll-behavior:smooth;}
       body{
         font-family:'DM Sans',sans-serif;
         background:
-        radial-gradient(circle at top right,#3b076430 0%,transparent 30%),
-        radial-gradient(circle at bottom left,#1e1b4b40 0%,transparent 30%),
-        #000;
+          radial-gradient(circle at top right,#3b076430 0%,transparent 30%),
+          radial-gradient(circle at bottom left,#1e1b4b40 0%,transparent 30%),
+          #000;
         color:white;
         overflow-x:hidden;
         width:100%;
       }
-
-      img{
-        max-width:100%;
-        display:block;
-      }
-
-      h1,h2,h3,h4{
-        font-family:'PT Sans',sans-serif;
-        letter-spacing:-0.03em;
-      }
-
+      img{max-width:100%;display:block;}
+      h1,h2,h3,h4{font-family:'PT Sans',sans-serif;letter-spacing:-0.03em;}
       body::before{
-        content:'';
-        position:fixed;
-        inset:0;
-        pointer-events:none;
-        opacity:.25;
-        z-index:0;
+        content:'';position:fixed;inset:0;pointer-events:none;opacity:.25;z-index:0;
         background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
       }
+      .reveal{opacity:0;transform:translateY(40px);transition:all .8s cubic-bezier(.4,0,.2,1);}
+      .reveal.in{opacity:1;transform:none;}
+      .card{background:rgba(24,24,27,.6);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.06);transition:.3s;}
+      .card:hover{transform:translateY(-6px);box-shadow:0 0 50px rgba(139,92,246,.18);border-color:#8B5CF6;}
+      .glow{box-shadow:0 0 40px rgba(139,92,246,.35);}
+      .navlink{position:relative;}
+      .navlink::after{content:'';position:absolute;left:0;bottom:-4px;width:0;height:2px;background:#8B5CF6;transition:.3s;}
+      .navlink:hover::after{width:100%;}
+      ::-webkit-scrollbar{width:5px;}
+      ::-webkit-scrollbar-thumb{background:#8B5CF6;border-radius:999px;}
 
-      .reveal{
-        opacity:0;
-        transform:translateY(40px);
-        transition:all .8s cubic-bezier(.4,0,.2,1);
+      /* ── VIDEO SLIDESHOW — peek layout ── */
+
+      /* The outer viewport clips everything */
+      .slideshow-viewport {
+        overflow: hidden;
+        width: 100%;
+        position: relative;
       }
 
-      .reveal.in{
-        opacity:1;
-        transform:none;
+      /* Track holds all slides side by side */
+      .slides-track {
+        display: flex;
+        transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
       }
 
-      .card{
-        background:rgba(24,24,27,.6);
-        backdrop-filter:blur(10px);
-        border:1px solid rgba(255,255,255,.06);
-        transition:.3s;
+      /*
+        Each slide = 75% of the viewport width, with 12.5% gap on each side.
+        We offset the track so the active slide is centred and neighbours peek.
+        The JS calculates the exact translateX.
+      */
+      .slide {
+        flex: 0 0 75%;
+        width: 75%;
+        padding: 0 10px;
+        box-sizing: border-box;
+        position: relative;
+        transition: opacity 0.45s, transform 0.45s;
       }
 
-      .card:hover{
-        transform:translateY(-6px);
-        box-shadow:0 0 50px rgba(139,92,246,.18);
-        border-color:#8B5CF6;
+      /* dim & slightly shrink adjacent peeking slides */
+      .slide.inactive {
+        opacity: 0.4;
+        transform: scale(0.96);
+        pointer-events: none;
       }
 
-      .glow{
-        box-shadow:0 0 40px rgba(139,92,246,.35);
+      .slide iframe {
+        width: 100%;
+        aspect-ratio: 16/9;
+        border: none;
+        border-radius: 18px;
+        display: block;
       }
 
-      .navlink{
-        position:relative;
+      /* Arrow buttons — sit on top of the viewport, vertically centred */
+      .arrow-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 20;
+        width: 46px; height: 46px;
+        border-radius: 50%;
+        background: rgba(139,92,246,0.28);
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(139,92,246,0.45);
+        color: white;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: all 0.25s;
+        font-size: 17px;
+      }
+      .arrow-btn:hover {
+        background: rgba(139,92,246,0.65);
+        border-color: #8B5CF6;
+        box-shadow: 0 0 22px rgba(139,92,246,0.55);
+        transform: translateY(-50%) scale(1.1);
+      }
+      /* arrows sit just inside the peeking zone */
+      .arrow-left  { left:  6px; }
+      .arrow-right { right: 6px; }
+
+      @media(max-width:640px){
+        .slide { flex: 0 0 82%; width: 82%; }
+        .arrow-btn { width:34px; height:34px; font-size:13px; }
       }
 
-      .navlink::after{
-        content:'';
-        position:absolute;
-        left:0;
-        bottom:-4px;
-        width:0;
-        height:2px;
-        background:#8B5CF6;
-        transition:.3s;
+      /* Dot nav */
+      .dot-nav { display:flex; justify-content:center; gap:10px; margin-top:22px; }
+      .dot {
+        width:10px; height:10px; border-radius:50%;
+        background:rgba(255,255,255,0.18);
+        border:1px solid rgba(139,92,246,0.3);
+        cursor:pointer; transition:all 0.3s;
       }
+      .dot.active { background:#8B5CF6; border-color:#8B5CF6; box-shadow:0 0 10px rgba(139,92,246,0.6); transform:scale(1.3); }
+      .dot:hover:not(.active) { background:rgba(139,92,246,0.4); border-color:#8B5CF6; }
 
-      .navlink:hover::after{
-        width:100%;
-      }
+      .slide-label { text-align:center; margin-top:12px; font-size:0.78rem; color:rgba(255,255,255,0.32); letter-spacing:0.07em; }
 
-      ::-webkit-scrollbar{
-        width:5px;
-      }
-
-      ::-webkit-scrollbar-thumb{
-        background:#8B5CF6;
-        border-radius:999px;
-      }
-
-      /* Mobile: tighter card text */
-      @media (max-width: 640px) {
-        .works-card-title {
-          font-size: 1.1rem !important;
-        }
-        .works-card-desc {
-          font-size: 0.8rem !important;
-          margin-bottom: 0.75rem !important;
-        }
-        .works-card-body {
-          padding: 0.875rem !important;
-        }
-        .works-card-badge {
-          font-size: 0.65rem !important;
-          padding: 2px 8px !important;
-        }
-        .works-card-link {
-          font-size: 0.75rem !important;
-        }
-        .works-card-img {
-          height: 140px !important;
-        }
+      @media(max-width:640px){
+        .works-card-title{font-size:1.1rem!important;}
+        .works-card-desc{font-size:0.8rem!important;margin-bottom:0.75rem!important;}
+        .works-card-body{padding:0.875rem!important;}
+        .works-card-badge{font-size:0.65rem!important;padding:2px 8px!important;}
+        .works-card-link{font-size:0.75rem!important;}
+        .works-card-img{height:140px!important;}
       }
     </style>
   </head>
 
   <body class="dark">
-  <!-- NAVBAR -->
+
+    <!-- NAVBAR -->
     <header class="fixed top-0 inset-x-0 z-50 backdrop-blur-xl bg-black/40 border-b border-white/5">
       <nav class="max-w-7xl mx-auto px-5 sm:px-6 h-20 flex items-center justify-between">
         <a href="#" class="text-xl sm:text-2xl font-bold tracking-tight">
@@ -169,25 +176,10 @@
           <a href="#works" class="navlink hover:text-white transition">Works</a>
           <a href="#contact" class="navlink hover:text-white transition">Contact</a>
         </div>
-
-        <a href="#contact" class="hidden lg:inline-flex bg-accent hover:bg-accent-light transition px-6 py-3 rounded-full text-sm font-medium glow">
-          Let's Create
-        </a>
-
-        <button 
-          @click="mobile = !mobile"
-          class="lg:hidden text-3xl text-white"
-        >
-          ☰
-        </button>
+        <a href="#contact" class="hidden lg:inline-flex bg-accent hover:bg-accent-light transition px-6 py-3 rounded-full text-sm font-medium glow">Let's Create</a>
+        <button @click="mobile = !mobile" class="lg:hidden text-3xl text-white">☰</button>
       </nav>
-
-      <!-- MOBILE MENU -->
-      <div
-        x-show="mobile"
-        x-transition
-        class="lg:hidden bg-black/95 border-t border-white/5 px-6 py-6"
-      >
+      <div x-show="mobile" x-transition class="lg:hidden bg-black/95 border-t border-white/5 px-6 py-6">
         <div class="flex flex-col gap-5 text-zinc-300 text-lg">
           <a href="#about">About</a>
           <a href="#services">Services</a>
@@ -202,76 +194,124 @@
       <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-700/20 rounded-full blur-3xl"></div>
       <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-700/20 rounded-full blur-3xl"></div>
       <div class="max-w-7xl mx-auto px-5 sm:px-6 relative z-10">
-
         <div class="grid lg:grid-cols-2 gap-14 lg:gap-16 items-center">
-
           <div class="text-center lg:text-left">
-            <p class="reveal uppercase tracking-[0.3em] text-accent text-xs sm:text-sm mb-6">
-              Music Producer • Composer • Music Director
-            </p>
+            <p class="reveal uppercase tracking-[0.3em] text-accent text-xs sm:text-sm mb-6">Music Producer • Composer • Music Director</p>
             <h1 class="reveal text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-8">
-              SHARMILAN
-              <span class="text-accent">.R</span>
+              SHARMILAN<span class="text-accent">.R</span>
             </h1>
             <p class="reveal text-zinc-400 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mb-10 mx-auto lg:mx-0">
               Creating cinematic soundtracks, emotional melodies and immersive sound design blending orchestral emotion with modern production.
             </p>
             <div class="reveal flex flex-wrap justify-center lg:justify-start gap-4 mb-14">
-              <a href="#works" class="bg-white text-black px-7 sm:px-8 py-4 rounded-full font-medium hover:bg-zinc-200 transition">
-                Listen To My Work
-              </a>
-              <a href="#contact" class="border border-zinc-700 px-7 sm:px-8 py-4 rounded-full hover:border-accent hover:text-accent transition">
-                Hire Me
-              </a>
+              <a href="#works" class="bg-white text-black px-7 sm:px-8 py-4 rounded-full font-medium hover:bg-zinc-200 transition">Listen To My Work</a>
+              <a href="#contact" class="border border-zinc-700 px-7 sm:px-8 py-4 rounded-full hover:border-accent hover:text-accent transition">Hire Me</a>
             </div>
           </div>
-
           <div class="reveal flex justify-center">
             <div class="relative">
               <div class="absolute inset-0 bg-accent blur-[120px] opacity-30"></div>
-              <img
-              src="Profile_Pic.jpeg"
-              class="relative z-10 w-[260px] sm:w-[320px] md:w-[380px] aspect-square rounded-[35px] object-cover border border-white/10 shadow-2xl"
-              alt="Sharmilan.R"
-              />
+              <img src="Profile_Pic.jpeg" class="relative z-10 w-[260px] sm:w-[320px] md:w-[380px] aspect-square rounded-[35px] object-cover border border-white/10 shadow-2xl" alt="Sharmilan.R"/>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ABOUT -->
+    <!-- ══════════════════════════════════════════
+         ABOUT — centered heading + video slideshow
+    ══════════════════════════════════════════ -->
     <section id="about" class="py-24 md:py-32 relative z-10">
-      <div class="max-w-7xl mx-auto px-5 sm:px-6">
-        <div class="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
-          <div class="reveal">
-            <img
-              src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1200&auto=format&fit=crop"
-              class="rounded-[30px] md:rounded-[40px] border border-white/10 w-full"
-              alt=""
-            />
-          </div>
-          <div>
-            <p class="reveal uppercase tracking-[0.3em] text-accent text-sm mb-6">About Me</p>
-            <h2 class="reveal text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-8">
-              Music That Feels Cinematic
-            </h2>
-            <p class="reveal text-zinc-400 text-lg leading-relaxed mb-6">
-              I'm Sharmilan.R, a music producer and composer focused on cinematic storytelling through sound.
-            </p>
-            <p class="reveal text-zinc-400 text-lg leading-relaxed mb-10">
-              From emotional piano themes to massive trailer arrangements, I build immersive musical experiences designed for films, songs and visual storytelling.
-            </p>
-            <div class="reveal flex flex-wrap gap-3">
-              <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5">Ableton Live</span>
-              <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5">Film Scoring</span>
-              <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5">Sound Design</span>
-              <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5">Orchestration</span>
-              <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5">Mixing</span>
-              <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5">Mastering</span>
-            </div>
+      <div class="max-w-6xl mx-auto px-5 sm:px-6">
+
+        <!-- Centered heading block -->
+        <div class="reveal text-center mb-16">
+          <p class="uppercase tracking-[0.35em] text-accent text-xs sm:text-sm mb-4">About Me</p>
+          <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
+            Music That Feels<br class="hidden sm:block"/> Cinematic
+          </h2>
+          <p class="text-zinc-400 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-4">
+            I'm Sharmilan.R, a music producer and composer focused on cinematic storytelling through sound.
+          </p>
+          <p class="text-zinc-400 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-10">
+            From emotional piano themes to massive trailer arrangements, I build immersive musical experiences designed for films, songs and visual storytelling.
+          </p>
+          <div class="flex flex-wrap justify-center gap-3">
+            <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5 text-sm">Ableton Live</span>
+            <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5 text-sm">Film Scoring</span>
+            <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5 text-sm">Sound Design</span>
+            <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5 text-sm">Orchestration</span>
+            <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5 text-sm">Mixing</span>
+            <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5 text-sm">Mastering</span>
           </div>
         </div>
+
+        <!-- VIDEO SLIDESHOW — peek layout -->
+        <div class="reveal">
+
+          <!-- viewport: clips the peeking neighbours -->
+          <div class="slideshow-viewport" id="slideshowViewport" style="position:relative;">
+
+            <div class="slides-track" id="slidesTrack">
+
+              <div class="slide inactive">
+                <iframe id="yt-0" src="test.mp4"
+                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+                  allowfullscreen title="Iniya Nizhaley"></iframe>
+              </div>
+
+              <div class="slide inactive">
+                <iframe id="yt-1" src="https://www.youtube.com/embed/OHMiYdZ6jv4?enablejsapi=1&rel=0"
+                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+                  allowfullscreen title="Natchathiram Yengu Selgiratho"></iframe>
+              </div>
+
+              <div class="slide inactive">
+                <iframe id="yt-2" src="https://www.youtube.com/embed/bf8Du4PW_2Q?enablejsapi=1&rel=0"
+                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+                  allowfullscreen title="Double X"></iframe>
+              </div>
+
+              <div class="slide inactive">
+                <iframe id="yt-3" src="https://www.youtube.com/embed/_y5LzuGFH7I?enablejsapi=1&rel=0"
+                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+                  allowfullscreen title="Orangattuma"></iframe>
+              </div>
+
+              <div class="slide inactive">
+                <iframe id="yt-4" src="https://www.youtube.com/embed/Yt5lOjJ8boM?enablejsapi=1&rel=0"
+                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+                  allowfullscreen title="Roshasangharsham"></iframe>
+              </div>
+
+              <div class="slide inactive">
+                <iframe id="yt-5" src="https://www.youtube.com/embed/X5muF460Tnc?enablejsapi=1&rel=0"
+                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+                  allowfullscreen title="Soda The Life of KissaMan"></iframe>
+              </div>
+
+            </div><!-- /slides-track -->
+
+            <!-- Arrows inside the viewport so they're always visible -->
+            <button class="arrow-btn arrow-left" id="arrowLeft" aria-label="Previous video">&#8592;</button>
+            <button class="arrow-btn arrow-right" id="arrowRight" aria-label="Next video">&#8594;</button>
+
+          </div><!-- /slideshow-viewport -->
+
+          <!-- Slide label -->
+          <p class="slide-label" id="slideLabel"></p>
+
+          <!-- Dot nav -->
+          <div class="dot-nav" id="dotNav">
+            <div class="dot active" data-index="0"></div>
+            <div class="dot" data-index="1"></div>
+            <div class="dot" data-index="2"></div>
+            <div class="dot" data-index="3"></div>
+            <div class="dot" data-index="4"></div>
+            <div class="dot" data-index="5"></div>
+          </div>
+        </div><!-- /reveal -->
+
       </div>
     </section>
 
@@ -309,158 +349,65 @@
           <p class="uppercase tracking-[0.3em] text-accent text-sm mb-5">Portfolio</p>
           <h2 class="text-5xl md:text-6xl font-bold">Featured Music</h2>
         </div>
-
-        <!-- 2 cols on mobile, 3 on desktop -->
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 
-          <!-- CARD 1 — Orangattuma (Spotify) -->
           <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
-            <a href="https://youtu.be/m38Be7tvYxw?si=LjHh9vDqzbrk4Y7T">
-              <img
-                  src="https://img.youtube.com/vi/m38Be7tvYxw/hqdefault.jpg"
-                  class="works-card-img w-full object-cover"
-                  style="height:180px;"
-                  alt="Trailer Score"
-                />
-            </a>
+            <a href="https://youtu.be/m38Be7tvYxw?si=LjHh9vDqzbrk4Y7T"><img src="https://img.youtube.com/vi/m38Be7tvYxw/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Iniya Nizhaley"/></a>
             <div class="works-card-body p-4 sm:p-6">
-              <div class="flex flex-wrap items-center gap-2 mb-3">
-                <span class="works-card-badge px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs">Cinematic</span>
-              </div>
+              <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs">Cinematic</span></div>
               <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Iniya Nizhaley</h3>
               <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Epic orchestral and hybrid cinematic sound design.</p>
-              <a href="https://youtu.be/m38Be7tvYxw?si=LjHh9vDqzbrk4Y7T" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">
-                View Project →
-              </a>
+              <a href="https://youtu.be/m38Be7tvYxw?si=LjHh9vDqzbrk4Y7T" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">View Project →</a>
             </div>
           </div>
 
-          <!-- CARD 2 — Natchathiram Yengu Selgiratho (YouTube: OHMiYdZ6jv4) -->
           <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
-            <a href="https://youtu.be/OHMiYdZ6jv4?si=wQaZZXe1xpcAD9t2">
-              <img
-                src="https://img.youtube.com/vi/OHMiYdZ6jv4/hqdefault.jpg"
-                class="works-card-img w-full object-cover"
-                style="height:180px;"
-                alt="Natchathiram Yengu Selgiratho"
-              />
-            </a>  
-
+            <a href="https://youtu.be/OHMiYdZ6jv4?si=wQaZZXe1xpcAD9t2"><img src="https://img.youtube.com/vi/OHMiYdZ6jv4/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Natchathiram Yengu Selgiratho"/></a>
             <div class="works-card-body p-4 sm:p-6">
-              <div class="flex flex-wrap items-center gap-2 mb-3">
-                <span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span>
-                <span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Shortfilm</span>
-              </div>
+              <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Shortfilm</span></div>
               <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Natchathiram Yengu Selgiratho</h3>
               <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Background score and music production for the shortfilm.</p>
-              <a
-                href="https://youtu.be/OHMiYdZ6jv4?si=wQaZZXe1xpcAD9t2"
-                target="_blank"
-                class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm"
-              >
-                Watch on YouTube →
-              </a>
+              <a href="https://youtu.be/OHMiYdZ6jv4?si=wQaZZXe1xpcAD9t2" target="_blank" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on YouTube →</a>
             </div>
           </div>
 
-          <!-- CARD 3 — Double X (YouTube: bf8Du4PW_2Q) -->
           <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
-            <a href="https://youtu.be/bf8Du4PW_2Q?si=NxLWW3gGaBf41jl4">
-              <img
-                src="https://img.youtube.com/vi/bf8Du4PW_2Q/hqdefault.jpg"
-                class="works-card-img w-full object-cover"
-                style="height:180px;"
-                alt="Double X"
-              />
-              </a>  
+            <a href="https://youtu.be/bf8Du4PW_2Q?si=NxLWW3gGaBf41jl4"><img src="https://img.youtube.com/vi/bf8Du4PW_2Q/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Double X"/></a>
             <div class="works-card-body p-4 sm:p-6">
-              <div class="flex flex-wrap items-center gap-2 mb-3">
-                <span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span>
-                <span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Shortfilm</span>
-              </div>
+              <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Shortfilm</span></div>
               <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Double X</h3>
               <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Cinematic background score and emotional music production.</p>
-              <a
-                href="https://youtu.be/bf8Du4PW_2Q?si=NxLWW3gGaBf41jl4"
-                target="_blank"
-                class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm"
-              >
-                Watch on YouTube →
-              </a>
+              <a href="https://youtu.be/bf8Du4PW_2Q?si=NxLWW3gGaBf41jl4" target="_blank" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on YouTube →</a>
             </div>
           </div>
 
-          <!-- CARD 4 — Trailer Score -->
           <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
-            <a href="https://youtu.be/_y5LzuGFH7I?si=UGeWH3oSCUI_i5w6">
-              <img
-                src="https://img.youtube.com/vi/_y5LzuGFH7I/hqdefault.jpg"
-                class="works-card-img w-full object-cover"
-                style="height:180px;"
-                alt="Orangattuma"
-              />
-            </a>
-
+            <a href="https://youtu.be/_y5LzuGFH7I?si=UGeWH3oSCUI_i5w6"><img src="https://img.youtube.com/vi/_y5LzuGFH7I/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Orangattuma"/></a>
             <div class="works-card-body p-4 sm:p-6">
-              <div class="flex flex-wrap items-center gap-2 mb-3">
-                <span class="works-card-badge px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">Spotify</span>
-                <span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Single</span>
-              </div>
+              <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">Spotify</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Single</span></div>
               <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Orangattuma</h3>
               <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Recently released song. I produced the music for it.</p>
-              <a
-                href="https://youtu.be/_y5LzuGFH7I?si=UGeWH3oSCUI_i5w6"
-                target="_blank"
-                class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm"
-              >
-                Listen on Spotify →
-              </a>
+              <a href="https://youtu.be/_y5LzuGFH7I?si=UGeWH3oSCUI_i5w6" target="_blank" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Listen on Spotify →</a>
             </div>
           </div>
 
-          <!-- CARD 5 — Emotional Theme -->
           <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
-            <a href="https://youtu.be/Yt5lOjJ8boM?si=QphuXHYdE76iZ0V5">
-              <img
-                src="https://img.youtube.com/vi/Yt5lOjJ8boM/hqdefault.jpg"
-                class="works-card-img w-full object-cover"
-                style="height:180px;"
-                alt="Emotional Theme"
-              />
-            </a>
-
+            <a href="https://youtu.be/Yt5lOjJ8boM?si=QphuXHYdE76iZ0V5"><img src="https://img.youtube.com/vi/Yt5lOjJ8boM/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Roshasangharsham"/></a>
             <div class="works-card-body p-4 sm:p-6">
-              <div class="flex flex-wrap items-center gap-2 mb-3">
-                <span class="works-card-badge px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs">Music Production</span>
-              </div>
+              <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs">Music Production</span></div>
               <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Roshasangharsham</h3>
               <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Melodic orchestral arrangement with cinematic atmosphere.</p>
-              <a href="https://youtu.be/Yt5lOjJ8boM?si=QphuXHYdE76iZ0V5" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">
-                Listen →
-              </a>
+              <a href="https://youtu.be/Yt5lOjJ8boM?si=QphuXHYdE76iZ0V5" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Listen →</a>
             </div>
           </div>
 
-          <!-- CARD 6 — Hybrid Soundtrack -->
           <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
-            <a href="https://youtu.be/X5muF460Tnc?si=hdqr8kE7iu7y6DSE" >
-            <img
-              src="https://img.youtube.com/vi/X5muF460Tnc/hqdefault.jpg"
-              class="works-card-img w-full object-cover"
-              style="height:180px;"
-              alt="Hybrid Soundtrack"
-            />
-            </a>
-
+            <a href="https://youtu.be/X5muF460Tnc?si=hdqr8kE7iu7y6DSE"><img src="https://img.youtube.com/vi/X5muF460Tnc/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Soda The Life of KissaMan"/></a>
             <div class="works-card-body p-4 sm:p-6">
-              <div class="flex flex-wrap items-center gap-2 mb-3">
-                <span class="works-card-badge px-3 py-1 rounded-full bg-pink-500/20 text-pink-400 text-xs">Sound Design</span>
-              </div>
+              <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-pink-500/20 text-pink-400 text-xs">Sound Design</span></div>
               <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Soda The Life of KissaMan</h3>
               <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Modern synth textures blended with orchestral scoring.</p>
-              <a href="https://youtu.be/X5muF460Tnc?si=hdqr8kE7iu7y6DSE" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">
-                Explore →
-              </a>
+              <a href="https://youtu.be/X5muF460Tnc?si=hdqr8kE7iu7y6DSE" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Explore →</a>
             </div>
           </div>
 
@@ -478,26 +425,15 @@
               <div>
                 <p class="uppercase tracking-[0.3em] text-accent text-sm mb-5">Artist Profile</p>
                 <h3 class="text-5xl font-bold leading-tight mb-6">SHARMILAN.R</h3>
-                <p class="text-zinc-400 leading-relaxed text-lg mb-8">
-                  Music Producer, Composer and Music Director crafting cinematic soundtracks, emotional melodies and immersive sound design for modern audiences.
-                </p>
+                <p class="text-zinc-400 leading-relaxed text-lg mb-8">Music Producer, Composer and Music Director crafting cinematic soundtracks, emotional melodies and immersive sound design for modern audiences.</p>
                 <div class="flex flex-wrap gap-4">
-                  <a
-                    href="https://open.spotify.com/artist/5bBOz5i5P5GIcB9NUiGTCk?si=lR5R__nETgGfa0lfT_VdcA"
-                    target="_blank"
-                    class="bg-green-500 hover:bg-green-400 transition px-7 py-3 rounded-full text-black font-medium"
-                  >
-                    Spotify Artist
-                  </a>
+                  <a href="https://open.spotify.com/artist/5bBOz5i5P5GIcB9NUiGTCk?si=lR5R__nETgGfa0lfT_VdcA" target="_blank" class="bg-green-500 hover:bg-green-400 transition px-7 py-3 rounded-full text-black font-medium">Spotify Artist</a>
                 </div>
               </div>
               <div class="flex justify-center">
                 <div class="relative">
                   <div class="absolute inset-0 bg-accent blur-[100px] opacity-30"></div>
-                  <img
-                    src="spotify_pic.jpeg"
-                    class="relative z-10 w-[340px] h-[340px] rounded-[35px] object-cover border border-white/10"
-                  />
+                  <img src="spotify_pic.jpeg" class="relative z-10 w-[340px] h-[340px] rounded-[35px] object-cover border border-white/10"/>
                 </div>
               </div>
             </div>
@@ -512,26 +448,11 @@
         <div class="card rounded-[30px] md:rounded-[40px] p-10 md:p-20 text-center relative overflow-hidden">
           <div class="absolute top-0 right-0 w-80 h-80 bg-accent/20 rounded-full blur-3xl"></div>
           <p class="uppercase tracking-[0.3em] text-accent text-sm mb-5 relative z-10">Contact</p>
-          <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-8 relative z-10">
-            Let's Create Something Cinematic
-          </h2>
-          <p class="text-zinc-400 text-lg leading-relaxed max-w-2xl mx-auto mb-12 relative z-10">
-            Open for film scoring, music production, trailer music and sound design projects.
-          </p>
+          <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-8 relative z-10">Let's Create Something Cinematic</h2>
+          <p class="text-zinc-400 text-lg leading-relaxed max-w-2xl mx-auto mb-12 relative z-10">Open for film scoring, music production, trailer music and sound design projects.</p>
           <div class="relative z-10 flex flex-col sm:flex-row justify-center gap-5">
-            <a
-              href="mailto:sharmilan2003spr@gmail.com"
-              class="bg-accent hover:bg-accent-light transition px-8 py-4 rounded-full font-medium"
-            >
-              Email Me
-            </a>
-            <a
-              href="https://instagram.com/r_sharmilan"
-              target="_blank"
-              class="border border-zinc-700 hover:border-accent px-8 py-4 rounded-full transition"
-            >
-              Instagram
-            </a>
+            <a href="mailto:sharmilan2003spr@gmail.com" class="bg-accent hover:bg-accent-light transition px-8 py-4 rounded-full font-medium">Email Me</a>
+            <a href="https://instagram.com/r_sharmilan" target="_blank" class="border border-zinc-700 hover:border-accent px-8 py-4 rounded-full transition">Instagram</a>
           </div>
         </div>
       </div>
@@ -545,23 +466,203 @@
       </div>
     </footer>
 
+    <!-- Alpine -->
     <script>
       function app(){
         return{
-          dark:true,
-          mobile:false,
+          dark:true,mobile:false,
           init(){
-            const io = new IntersectionObserver(entries=>{
-              entries.forEach(entry=>{
-                if(entry.isIntersecting){
-                  entry.target.classList.add('in')
-                }
-              })
+            const io=new IntersectionObserver(entries=>{
+              entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')})
             },{threshold:0.15})
             document.querySelectorAll('.reveal').forEach(el=>io.observe(el))
           }
         }
       }
     </script>
+
+    <!-- Slideshow + YouTube IFrame API -->
+    <script>
+      /*
+        Infinite loop peek carousel.
+        Strategy: clone the last real slide and prepend it,
+                  clone the first real slide and append it.
+        Track positions: [clone-last] [0] [1] [2] [3] [4] [5] [clone-first]
+        We start at trackIndex=1 (real slide 0).
+        When we animate to clone-last (trackIndex=0) or clone-first (trackIndex=7),
+        we instantly jump (no transition) to the corresponding real slide.
+      */
+
+      const TOTAL  = 6;
+      const titles = [
+        'Iniya Nizhaley',
+        'Natchathiram Yengu Selgiratho',
+        'Double X',
+        'Orangattuma',
+        'Roshasangharsham',
+        'Soda The Life of KissaMan'
+      ];
+
+      const track    = document.getElementById('slidesTrack');
+      const viewport = document.getElementById('slideshowViewport');
+      const dots     = document.querySelectorAll('.dot');
+      const label    = document.getElementById('slideLabel');
+      let players    = [];        // YT players indexed 0..TOTAL-1 (real slides only)
+      let realIndex  = 0;         // which real slide is active (0..TOTAL-1)
+      let trackIndex = 1;         // position in the extended track (1..TOTAL, 0=clone-last, TOTAL+1=clone-first)
+      let isJumping  = false;     // true while doing the instant no-animation jump
+
+      /* ── 1. Build clones ── */
+      const realSlides = Array.from(track.querySelectorAll('.slide'));
+
+      // Clone last real slide → prepend
+      const cloneLast = realSlides[TOTAL - 1].cloneNode(true);
+      cloneLast.classList.add('clone');
+      // remove iframes from clones to avoid double YT player conflicts — use thumbnails instead
+      cloneLast.querySelector('iframe').replaceWith(makeThumbnail(TOTAL - 1));
+      track.insertBefore(cloneLast, realSlides[0]);
+
+      // Clone first real slide → append
+      const cloneFirst = realSlides[0].cloneNode(true);
+      cloneFirst.classList.add('clone');
+      cloneFirst.querySelector('iframe').replaceWith(makeThumbnail(0));
+      track.appendChild(cloneFirst);
+
+      function makeThumbnail(realIdx) {
+        const ytIds = ['m38Be7tvYxw','OHMiYdZ6jv4','bf8Du4PW_2Q','_y5LzuGFH7I','Yt5lOjJ8boM','X5muF460Tnc'];
+        const img = document.createElement('img');
+        img.src = 'https://img.youtube.com/vi/' + ytIds[realIdx] + '/hqdefault.jpg';
+        img.style.cssText = 'width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:18px;display:block;';
+        img.alt = titles[realIdx];
+        return img;
+      }
+
+      /* all slides now (including 2 clones) */
+      const allSlides = Array.from(track.querySelectorAll('.slide'));
+
+      /* ── 2. Position helpers ── */
+      function slideWidth() {
+        return allSlides[0].offsetWidth;
+      }
+
+      function getOffset(ti) {
+        const vw = viewport.offsetWidth;
+        const sw = slideWidth();
+        const centre = (vw - sw) / 2;
+        return centre - ti * sw;
+      }
+
+      function applyOffset(animated) {
+        if (!animated) {
+          track.style.transition = 'none';
+        } else {
+          track.style.transition = 'transform 0.52s cubic-bezier(0.4,0,0.2,1)';
+        }
+        track.style.transform = 'translateX(' + getOffset(trackIndex) + 'px)';
+      }
+
+      function updateSlideStates() {
+        allSlides.forEach((s, i) => {
+          s.classList.toggle('inactive', i !== trackIndex);
+        });
+      }
+
+      function updateDots() {
+        dots.forEach((d, i) => d.classList.toggle('active', i === realIndex));
+      }
+
+      function updateLabel() {
+        label.textContent = (realIndex + 1) + ' / ' + TOTAL + ' — ' + titles[realIndex];
+      }
+
+      /* ── 3. After transition: handle wrap-around jump ── */
+      track.addEventListener('transitionend', () => {
+        if (isJumping) return;
+
+        if (trackIndex === 0) {
+          // Slid to clone-last → jump to real last (trackIndex = TOTAL)
+          isJumping = true;
+          trackIndex = TOTAL;
+          applyOffset(false);
+          requestAnimationFrame(() => requestAnimationFrame(() => { isJumping = false; }));
+        } else if (trackIndex === TOTAL + 1) {
+          // Slid to clone-first → jump to real first (trackIndex = 1)
+          isJumping = true;
+          trackIndex = 1;
+          applyOffset(false);
+          requestAnimationFrame(() => requestAnimationFrame(() => { isJumping = false; }));
+        }
+      });
+
+      /* ── 4. goTo by real index ── */
+      function goTo(newReal) {
+        // pause previous YT player
+        try { if (players[realIndex] && players[realIndex].pauseVideo) players[realIndex].pauseVideo(); } catch(e){}
+
+        realIndex  = ((newReal % TOTAL) + TOTAL) % TOTAL;
+        trackIndex = realIndex + 1;   // offset by 1 because clone-last is at position 0
+
+        applyOffset(true);
+        updateSlideStates();
+        updateDots();
+        updateLabel();
+      }
+
+      /* ── 5. Step forward / backward (handles clone boundary) ── */
+      function stepBy(dir) {
+        // pause previous YT player
+        try { if (players[realIndex] && players[realIndex].pauseVideo) players[realIndex].pauseVideo(); } catch(e){}
+
+        trackIndex += dir;
+        // update realIndex wrapping
+        realIndex = ((trackIndex - 1) % TOTAL + TOTAL) % TOTAL;
+
+        applyOffset(true);
+        updateSlideStates();
+        updateDots();
+        updateLabel();
+      }
+
+      /* ── 6. Controls ── */
+      document.getElementById('arrowLeft').addEventListener('click',  () => stepBy(-1));
+      document.getElementById('arrowRight').addEventListener('click', () => stepBy(+1));
+      dots.forEach(dot => dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index))));
+
+      /* ── 7. Resize ── */
+      window.addEventListener('resize', () => applyOffset(false));
+
+      /* ── 8. Init ── */
+      function init() {
+        applyOffset(false);
+        updateSlideStates();
+        updateDots();
+        updateLabel();
+      }
+      window.addEventListener('load', init);
+      setTimeout(init, 120);
+
+      /* ── 9. YouTube IFrame API (real slides only, index 0..TOTAL-1) ── */
+      const ytScript = document.createElement('script');
+      ytScript.src   = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(ytScript);
+
+      window.onYouTubeIframeAPIReady = function () {
+        for (let i = 0; i < TOTAL; i++) {
+          players[i] = new YT.Player('yt-' + i, {
+            events: {
+              onStateChange: (function(ri){
+                return function(e) {
+                  // auto-advance when video ends and it's the active real slide
+                  if (e.data === 0 && ri === realIndex) stepBy(+1);
+                };
+              })(i)
+            }
+          });
+        }
+      };
+
+      label.textContent = '1 / ' + TOTAL + ' — ' + titles[0];
+    </script>
+
   </body>
 </html>
