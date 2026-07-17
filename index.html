@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sharmilan.R — Music Producer & Composer</title>
     <meta name="description" content="Sharmilan.R — Music Producer, Music Director & Composer creating cinematic soundtracks, emotional melodies and immersive sound design." />
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
@@ -63,25 +63,18 @@
 
       /* ── VIDEO SLIDESHOW — peek layout ── */
 
-      /* The outer viewport clips everything */
       .slideshow-viewport {
         overflow: hidden;
         width: 100%;
         position: relative;
       }
 
-      /* Track holds all slides side by side */
       .slides-track {
         display: flex;
         transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
         will-change: transform;
       }
 
-      /*
-        Each slide = 75% of the viewport width, with 12.5% gap on each side.
-        We offset the track so the active slide is centred and neighbours peek.
-        The JS calculates the exact translateX.
-      */
       .slide {
         flex: 0 0 75%;
         width: 75%;
@@ -91,22 +84,22 @@
         transition: opacity 0.45s, transform 0.45s;
       }
 
-      /* dim & slightly shrink adjacent peeking slides */
       .slide.inactive {
         opacity: 0.4;
         transform: scale(0.96);
         pointer-events: none;
       }
 
-      .slide iframe {
+      .slide video {
         width: 100%;
         aspect-ratio: 16/9;
         border: none;
         border-radius: 18px;
         display: block;
+        background: #000;
+        object-fit: cover;
       }
 
-      /* Arrow buttons — sit on top of the viewport, vertically centred */
       .arrow-btn {
         position: absolute;
         top: 50%;
@@ -129,7 +122,6 @@
         box-shadow: 0 0 22px rgba(139,92,246,0.55);
         transform: translateY(-50%) scale(1.1);
       }
-      /* arrows sit just inside the peeking zone */
       .arrow-left  { left:  6px; }
       .arrow-right { right: 6px; }
 
@@ -138,7 +130,6 @@
         .arrow-btn { width:34px; height:34px; font-size:13px; }
       }
 
-      /* Dot nav */
       .dot-nav { display:flex; justify-content:center; gap:10px; margin-top:22px; }
       .dot {
         width:10px; height:10px; border-radius:50%;
@@ -159,6 +150,62 @@
         .works-card-link{font-size:0.75rem!important;}
         .works-card-img{height:140px!important;}
       }
+
+      /* ── PREVIEW SAMPLES — audio grid ── */
+      .tracks-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 28px 40px;
+      }
+      @media(min-width:640px){
+        .tracks-grid { grid-template-columns: repeat(3, 1fr); }
+      }
+      .track-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .track-play {
+        flex: 0 0 auto;
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: .25s;
+        font-size: .8rem;
+      }
+      .track-play:hover { border-color: #8B5CF6; }
+      .track-item.playing .track-play {
+        background: #8B5CF6;
+        border-color: #8B5CF6;
+        box-shadow: 0 0 14px rgba(139,92,246,.55);
+      }
+      .waveform {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        height: 28px;
+        overflow: hidden;
+      }
+      .waveform span {
+        width: 2px;
+        min-width: 2px;
+        background: rgba(255,255,255,0.32);
+        border-radius: 1px;
+        transition: background .25s;
+      }
+      .track-item.playing .waveform span { background: #A78BFA; }
+      .track-name {
+        margin-top: 10px;
+        font-size: .82rem;
+        text-align: center;
+        color: rgba(255,255,255,.55);
+      }
+      .track-name b { color: #fff; font-weight: 600; }
     </style>
   </head>
 
@@ -198,7 +245,7 @@
           <div class="text-center lg:text-left">
             <p class="reveal uppercase tracking-[0.3em] text-accent text-xs sm:text-sm mb-6">Music Producer • Composer • Music Director</p>
             <h1 class="reveal text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-8">
-              SHARMILAN mass<span class="text-accent">.R</span>
+              SHARMILAN<span class="text-accent">.R</span>
             </h1>
             <p class="reveal text-zinc-400 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mb-10 mx-auto lg:mx-0">
               Creating cinematic soundtracks, emotional melodies and immersive sound design blending orchestral emotion with modern production.
@@ -246,72 +293,191 @@
           </div>
         </div>
 
-        <!-- VIDEO SLIDESHOW — peek layout -->
+        <!-- VIDEO SLIDESHOW — peek layout (2 videos only) -->
         <div class="reveal">
 
-          <!-- viewport: clips the peeking neighbours -->
           <div class="slideshow-viewport" id="slideshowViewport" style="position:relative;">
 
             <div class="slides-track" id="slidesTrack">
 
               <div class="slide inactive">
-                <iframe id="yt-0" src="SFX_DESIGNED_BY_ME.mp4"
-                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
-                  allowfullscreen title="Iniya Nizhaley"></iframe>
+                <!-- SLIDE 1: local mp4 file, place it in the same folder as this html (or update the src path) -->
+                <video id="vid-0" src="SFX_DESIGNED_BY_ME.mp4" controls playsinline title="Iniya Nizhaley"></video>
               </div>
 
               <div class="slide inactive">
-                <iframe id="yt-1" src="Backgound_Score_001.mp4"
-                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
-                  allowfullscreen title="Natchathiram Yengu Selgiratho"></iframe>
-              </div>
-
-              <div class="slide inactive">
-                <iframe id="yt-2" src="https://www.youtube.com/embed/bf8Du4PW_2Q?enablejsapi=1&rel=0"
-                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
-                  allowfullscreen title="Double X"></iframe>
-              </div>
-
-              <div class="slide inactive">
-                <iframe id="yt-3" src="https://www.youtube.com/embed/_y5LzuGFH7I?enablejsapi=1&rel=0"
-                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
-                  allowfullscreen title="Orangattuma"></iframe>
-              </div>
-
-              <div class="slide inactive">
-                <iframe id="yt-4" src="https://www.youtube.com/embed/Yt5lOjJ8boM?enablejsapi=1&rel=0"
-                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
-                  allowfullscreen title="Roshasangharsham"></iframe>
-              </div>
-
-              <div class="slide inactive">
-                <iframe id="yt-5" src="https://www.youtube.com/embed/X5muF460Tnc?enablejsapi=1&rel=0"
-                  allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
-                  allowfullscreen title="Soda The Life of KissaMan"></iframe>
+                <!-- SLIDE 2: local mp4 file -->
+                <video id="vid-1" src="Backgound_Score_001.mp4" controls playsinline title="Natchathiram Yengu Selgiratho"></video>
               </div>
 
             </div><!-- /slides-track -->
 
-            <!-- Arrows inside the viewport so they're always visible -->
             <button class="arrow-btn arrow-left" id="arrowLeft" aria-label="Previous video">&#8592;</button>
             <button class="arrow-btn arrow-right" id="arrowRight" aria-label="Next video">&#8594;</button>
 
           </div><!-- /slideshow-viewport -->
 
-          <!-- Slide label -->
           <p class="slide-label" id="slideLabel"></p>
 
-          <!-- Dot nav -->
           <div class="dot-nav" id="dotNav">
             <div class="dot active" data-index="0"></div>
             <div class="dot" data-index="1"></div>
-            <div class="dot" data-index="2"></div>
-            <div class="dot" data-index="3"></div>
-            <div class="dot" data-index="4"></div>
-            <div class="dot" data-index="5"></div>
           </div>
         </div><!-- /reveal -->
 
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         PREVIEW SAMPLES — audio grid (Stems & MIDI)
+    ══════════════════════════════════════════ -->
+    <section id="samples" class="py-16 md:py-24 relative z-10">
+      <div class="max-w-6xl mx-auto px-5 sm:px-6">
+
+        <div class="reveal text-center mb-14">
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">
+            Preview Samples <span class="text-accent">(Stems &amp; MIDI included)</span>
+          </h2>
+        </div>
+
+        <div class="reveal card rounded-[30px] p-8 md:p-12">
+          <div class="tracks-grid">
+
+            <!--
+              ══════════════════════════════════════════════════════
+              HOW TO ADD YOUR AUDIO FILES:
+              Each .track-item below has a data-audio="..." attribute.
+              Replace that path with the real path/URL to your mp3/wav file,
+              e.g. data-audio="audio/Detonate.mp3"
+              Put your audio files in an "audio/" folder next to this html file
+              (or use a full URL if hosting them elsewhere).
+              Update the track name / BPM / Key text inside <b> and the span
+              to match your actual sample.
+              ══════════════════════════════════════════════════════
+            -->
+
+            <div class="track-item" data-audio="audio/Detonate.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Detonate">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Detonate</b> - 128 BPM C Min</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/Aries.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Aries">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Aries</b> - 151 BPM E Min</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/Ashtray.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Ashtray">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Ashtray</b> - 142 BPM C# Min</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/Algorithm.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Algorithm">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Algorithm</b> - 137 BPM F Min</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/Ascension.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Ascension">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Ascension</b> - 128 BPM B Min</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/Adrenaline.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Adrenaline">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Adrenaline</b> - 127 BPM F# Min</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/Atlantic.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Atlantic">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Atlantic</b> - 140 BPM D Min</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/Boulevard.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Boulevard">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Boulevard</b> - 137 BPM A Min</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/Circuit.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Circuit">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Circuit</b> - 125 BPM A Min</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/Antique.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Antique">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Antique</b> - 72 BPM D# Min</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/Artists-Drum-Loop.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Artists Drum Loop">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Artists Drum Loop</b> - 140 BPM</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/Come-My-Way-Vocal-Loop.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Come My Way Vocal Loop">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Come My Way Vocal Loop</b> - 170 BPM D# Min</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/808-Funds.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play 808 Funds">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>808 Funds</b> (C)</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/PHRASE-Back-Outside.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play PHRASE Back Outside">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>PHRASE Back Outside</b> - 113 BPM G Min</p>
+            </div>
+
+            <div class="track-item" data-audio="audio/Drum-Fill-Fruit.mp3">
+              <div class="track-row">
+                <button class="track-play" aria-label="Play Drum Fill">▶</button>
+                <div class="waveform"></div>
+              </div>
+              <p class="track-name"><b>Drum Fill (Fruit)</b> - 140 BPM</p>
+            </div>
+
+          </div>
+        </div>
       </div>
     </section>
 
@@ -481,69 +647,48 @@
       }
     </script>
 
-    <!-- Slideshow + YouTube IFrame API -->
+    <!-- Slideshow (2 local videos, auto play/pause on switch) -->
     <script>
-      /*
-        Infinite loop peek carousel.
-        Strategy: clone the last real slide and prepend it,
-                  clone the first real slide and append it.
-        Track positions: [clone-last] [0] [1] [2] [3] [4] [5] [clone-first]
-        We start at trackIndex=1 (real slide 0).
-        When we animate to clone-last (trackIndex=0) or clone-first (trackIndex=7),
-        we instantly jump (no transition) to the corresponding real slide.
-      */
-
-      const TOTAL  = 6;
-      const titles = [
-        'Iniya Nizhaley',
-        'Natchathiram Yengu Selgiratho',
-        'Double X',
-        'Orangattuma',
-        'Roshasangharsham',
-        'Soda The Life of KissaMan'
-      ];
+      const TOTAL  = 2;
+      const titles = ['Iniya Nizhaley', 'Natchathiram Yengu Selgiratho'];
 
       const track    = document.getElementById('slidesTrack');
       const viewport = document.getElementById('slideshowViewport');
       const dots     = document.querySelectorAll('.dot');
       const label    = document.getElementById('slideLabel');
-      let players    = [];        // YT players indexed 0..TOTAL-1 (real slides only)
-      let realIndex  = 0;         // which real slide is active (0..TOTAL-1)
-      let trackIndex = 1;         // position in the extended track (1..TOTAL, 0=clone-last, TOTAL+1=clone-first)
-      let isJumping  = false;     // true while doing the instant no-animation jump
+      const videos   = [document.getElementById('vid-0'), document.getElementById('vid-1')];
 
-      /* ── 1. Build clones ── */
+      let realIndex  = 0;   // which real slide is active (0..TOTAL-1)
+      let trackIndex = 1;   // position in the extended track (1..TOTAL, 0=clone-last, TOTAL+1=clone-first)
+      let isJumping  = false;
+
+      /* ── 1. Build peek clones (muted decorative copies, no controls) ── */
       const realSlides = Array.from(track.querySelectorAll('.slide'));
 
-      // Clone last real slide → prepend
-      const cloneLast = realSlides[TOTAL - 1].cloneNode(true);
-      cloneLast.classList.add('clone');
-      // remove iframes from clones to avoid double YT player conflicts — use thumbnails instead
-      cloneLast.querySelector('iframe').replaceWith(makeThumbnail(TOTAL - 1));
-      track.insertBefore(cloneLast, realSlides[0]);
-
-      // Clone first real slide → append
-      const cloneFirst = realSlides[0].cloneNode(true);
-      cloneFirst.classList.add('clone');
-      cloneFirst.querySelector('iframe').replaceWith(makeThumbnail(0));
-      track.appendChild(cloneFirst);
-
-      function makeThumbnail(realIdx) {
-        const ytIds = ['m38Be7tvYxw','OHMiYdZ6jv4','bf8Du4PW_2Q','_y5LzuGFH7I','Yt5lOjJ8boM','X5muF460Tnc'];
-        const img = document.createElement('img');
-        img.src = 'https://img.youtube.com/vi/' + ytIds[realIdx] + '/hqdefault.jpg';
-        img.style.cssText = 'width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:18px;display:block;';
-        img.alt = titles[realIdx];
-        return img;
+      function prepareClone(slideEl){
+        const vid = slideEl.querySelector('video');
+        if (vid){
+          vid.removeAttribute('id');
+          vid.removeAttribute('controls');
+          vid.muted = true;
+          vid.pause();
+        }
       }
 
-      /* all slides now (including 2 clones) */
+      const cloneLast = realSlides[TOTAL - 1].cloneNode(true);
+      cloneLast.classList.add('clone');
+      prepareClone(cloneLast);
+      track.insertBefore(cloneLast, realSlides[0]);
+
+      const cloneFirst = realSlides[0].cloneNode(true);
+      cloneFirst.classList.add('clone');
+      prepareClone(cloneFirst);
+      track.appendChild(cloneFirst);
+
       const allSlides = Array.from(track.querySelectorAll('.slide'));
 
       /* ── 2. Position helpers ── */
-      function slideWidth() {
-        return allSlides[0].offsetWidth;
-      }
+      function slideWidth() { return allSlides[0].offsetWidth; }
 
       function getOffset(ti) {
         const vw = viewport.offsetWidth;
@@ -553,40 +698,38 @@
       }
 
       function applyOffset(animated) {
-        if (!animated) {
-          track.style.transition = 'none';
-        } else {
-          track.style.transition = 'transform 0.52s cubic-bezier(0.4,0,0.2,1)';
-        }
+        track.style.transition = animated ? 'transform 0.52s cubic-bezier(0.4,0,0.2,1)' : 'none';
         track.style.transform = 'translateX(' + getOffset(trackIndex) + 'px)';
       }
 
       function updateSlideStates() {
-        allSlides.forEach((s, i) => {
-          s.classList.toggle('inactive', i !== trackIndex);
-        });
+        allSlides.forEach((s, i) => s.classList.toggle('inactive', i !== trackIndex));
       }
-
       function updateDots() {
         dots.forEach((d, i) => d.classList.toggle('active', i === realIndex));
       }
-
       function updateLabel() {
         label.textContent = (realIndex + 1) + ' / ' + TOTAL + ' — ' + titles[realIndex];
       }
 
-      /* ── 3. After transition: handle wrap-around jump ── */
+      /* ── 3. Play/pause control: stop every video, then play the active one ── */
+      function stopAllVideos() {
+        videos.forEach(v => { if (v) { v.pause(); } });
+      }
+      function playCurrent() {
+        const v = videos[realIndex];
+        if (v) { v.play().catch(() => {}); }
+      }
+
+      /* ── 4. Wrap-around jump after the slide-transition finishes ── */
       track.addEventListener('transitionend', () => {
         if (isJumping) return;
-
         if (trackIndex === 0) {
-          // Slid to clone-last → jump to real last (trackIndex = TOTAL)
           isJumping = true;
           trackIndex = TOTAL;
           applyOffset(false);
           requestAnimationFrame(() => requestAnimationFrame(() => { isJumping = false; }));
         } else if (trackIndex === TOTAL + 1) {
-          // Slid to clone-first → jump to real first (trackIndex = 1)
           isJumping = true;
           trackIndex = 1;
           applyOffset(false);
@@ -594,44 +737,41 @@
         }
       });
 
-      /* ── 4. goTo by real index ── */
-      function goTo(newReal) {
-        // pause previous YT player
-        try { if (players[realIndex] && players[realIndex].pauseVideo) players[realIndex].pauseVideo(); } catch(e){}
-
-        realIndex  = ((newReal % TOTAL) + TOTAL) % TOTAL;
-        trackIndex = realIndex + 1;   // offset by 1 because clone-last is at position 0
-
+      /* ── 5. Switch slides (used by dots, arrows, and auto-advance on "ended") ── */
+      function switchTo(newReal, dir) {
+        stopAllVideos();
+        if (typeof dir === 'number') {
+          trackIndex += dir;
+          realIndex = ((trackIndex - 1) % TOTAL + TOTAL) % TOTAL;
+        } else {
+          realIndex  = ((newReal % TOTAL) + TOTAL) % TOTAL;
+          trackIndex = realIndex + 1;
+        }
         applyOffset(true);
         updateSlideStates();
         updateDots();
         updateLabel();
+        playCurrent();
       }
 
-      /* ── 5. Step forward / backward (handles clone boundary) ── */
-      function stepBy(dir) {
-        // pause previous YT player
-        try { if (players[realIndex] && players[realIndex].pauseVideo) players[realIndex].pauseVideo(); } catch(e){}
-
-        trackIndex += dir;
-        // update realIndex wrapping
-        realIndex = ((trackIndex - 1) % TOTAL + TOTAL) % TOTAL;
-
-        applyOffset(true);
-        updateSlideStates();
-        updateDots();
-        updateLabel();
-      }
+      function goTo(newReal) { switchTo(newReal); }
+      function stepBy(dir)   { switchTo(null, dir); }
 
       /* ── 6. Controls ── */
       document.getElementById('arrowLeft').addEventListener('click',  () => stepBy(-1));
       document.getElementById('arrowRight').addEventListener('click', () => stepBy(+1));
       dots.forEach(dot => dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index))));
 
-      /* ── 7. Resize ── */
+      /* ── 7. Auto-advance to the next slide when a video finishes ── */
+      videos.forEach((v, i) => {
+        if (!v) return;
+        v.addEventListener('ended', () => { if (i === realIndex) stepBy(+1); });
+      });
+
+      /* ── 8. Resize ── */
       window.addEventListener('resize', () => applyOffset(false));
 
-      /* ── 8. Init ── */
+      /* ── 9. Init ── */
       function init() {
         applyOffset(false);
         updateSlideStates();
@@ -641,27 +781,58 @@
       window.addEventListener('load', init);
       setTimeout(init, 120);
 
-      /* ── 9. YouTube IFrame API (real slides only, index 0..TOTAL-1) ── */
-      const ytScript = document.createElement('script');
-      ytScript.src   = 'https://www.youtube.com/iframe_api';
-      document.head.appendChild(ytScript);
+      label.textContent = '1 / ' + TOTAL + ' — ' + titles[0];
+    </script>
 
-      window.onYouTubeIframeAPIReady = function () {
-        for (let i = 0; i < TOTAL; i++) {
-          players[i] = new YT.Player('yt-' + i, {
-            events: {
-              onStateChange: (function(ri){
-                return function(e) {
-                  // auto-advance when video ends and it's the active real slide
-                  if (e.data === 0 && ri === realIndex) stepBy(+1);
-                };
-              })(i)
+    <!-- Preview Samples: waveform bars + click-to-play audio -->
+    <script>
+      // Draw a lightweight decorative waveform inside each .waveform element
+      document.querySelectorAll('.waveform').forEach(wf => {
+        const barCount = 40;
+        for (let i = 0; i < barCount; i++) {
+          const bar = document.createElement('span');
+          const h = 4 + Math.random() * 20; // px
+          bar.style.height = h + 'px';
+          wf.appendChild(bar);
+        }
+      });
+
+      // Click-to-play / click-to-pause, one track at a time
+      document.querySelectorAll('.track-item').forEach(item => {
+        const btn = item.querySelector('.track-play');
+        const src = item.dataset.audio;
+        let audio = null;
+
+        btn.addEventListener('click', () => {
+          // stop any other currently playing track
+          document.querySelectorAll('.track-item.playing').forEach(other => {
+            if (other !== item) {
+              other.classList.remove('playing');
+              other.querySelector('.track-play').textContent = '▶';
+              if (other._audio) other._audio.pause();
             }
           });
-        }
-      };
 
-      label.textContent = '1 / ' + TOTAL + ' — ' + titles[0];
+          if (!audio) {
+            audio = new Audio(src);
+            item._audio = audio;
+            audio.addEventListener('ended', () => {
+              item.classList.remove('playing');
+              btn.textContent = '▶';
+            });
+          }
+
+          if (item.classList.contains('playing')) {
+            audio.pause();
+            item.classList.remove('playing');
+            btn.textContent = '▶';
+          } else {
+            audio.play().catch(() => {});
+            item.classList.add('playing');
+            btn.textContent = '❚❚';
+          }
+        });
+      });
     </script>
 
   </body>
