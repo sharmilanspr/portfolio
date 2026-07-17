@@ -196,7 +196,7 @@
         min-width: 2px;
         background: rgba(255,255,255,0.32);
         border-radius: 1px;
-        transition: background .25s;
+        transition: height .07s linear, background .25s;
       }
       .track-item.playing .waveform span { background: #A78BFA; }
       .track-name {
@@ -357,12 +357,12 @@
               ══════════════════════════════════════════════════════
             -->
 
-            <div class="track-item" data-audio="audio/Detonate.mp3">
+            <div class="track-item" data-audio="HW_EPIC_BGM_001.wav">
               <div class="track-row">
-                <button class="track-play" aria-label="Play Detonate">▶</button>
+                <button class="track-play" aria-label="Play HW_EPIC_BGM_001">▶</button>
                 <div class="waveform"></div>
               </div>
-              <p class="track-name"><b>Detonate</b> - 128 BPM C Min</p>
+              <p class="track-name"><b>HW_EPIC_BGM_001</b> - 128 BPM C Min</p>
             </div>
 
             <div class="track-item" data-audio="audio/Aries.mp3">
@@ -785,52 +785,97 @@
       label.textContent = '1 / ' + TOTAL + ' — ' + titles[0];
     </script>
 
-    <!-- Preview Samples: waveform bars + click-to-play audio -->
+    <!-- Preview Samples: REAL-TIME audio-reactive waveform bars (Web Audio API) -->
     <script>
-      // Draw a lightweight decorative waveform inside each .waveform element
+      // Build the bar elements for every waveform (start flat, they animate live once playing)
       document.querySelectorAll('.waveform').forEach(wf => {
         const barCount = 40;
         for (let i = 0; i < barCount; i++) {
           const bar = document.createElement('span');
-          const h = 4 + Math.random() * 20; // px
-          bar.style.height = h + 'px';
+          bar.style.height = '4px';
           wf.appendChild(bar);
         }
       });
 
-      // Click-to-play / click-to-pause, one track at a time
+      // One shared AudioContext for the whole page (browsers limit how many you can create)
+      let audioCtx = null;
+      function getAudioCtx() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        return audioCtx;
+      }
+
+      let currentAnimFrame = null;
+
       document.querySelectorAll('.track-item').forEach(item => {
-        const btn = item.querySelector('.track-play');
-        const src = item.dataset.audio;
-        let audio = null;
+        const btn  = item.querySelector('.track-play');
+        const src  = item.dataset.audio;
+        const bars = item.querySelectorAll('.waveform span');
+
+        let audio = null, analyser = null, dataArray = null, source = null;
+
+        function setupAnalyser() {
+          const ctx = getAudioCtx();
+          source = ctx.createMediaElementSource(audio);
+          analyser = ctx.createAnalyser();
+          analyser.fftSize = 128; // 64 frequency bins — plenty for 40 visual bars
+          dataArray = new Uint8Array(analyser.frequencyBinCount);
+          source.connect(analyser);
+          analyser.connect(ctx.destination);
+        }
+
+        function animateBars() {
+          analyser.getByteFrequencyData(dataArray);
+          bars.forEach((bar, i) => {
+            const value = dataArray[i % dataArray.length]; // 0-255
+            const height = 4 + (value / 255) * 26; // 4px min, 30px max
+            bar.style.height = height + 'px';
+          });
+          currentAnimFrame = requestAnimationFrame(animateBars);
+        }
+
+        function resetBars() {
+          bars.forEach(bar => { bar.style.height = '4px'; });
+        }
 
         btn.addEventListener('click', () => {
-          // stop any other currently playing track
+          // stop every other currently playing track first
           document.querySelectorAll('.track-item.playing').forEach(other => {
             if (other !== item) {
               other.classList.remove('playing');
               other.querySelector('.track-play').textContent = '▶';
               if (other._audio) other._audio.pause();
+              if (other._resetBars) other._resetBars();
             }
           });
 
           if (!audio) {
             audio = new Audio(src);
+            audio.crossOrigin = 'anonymous';
             item._audio = audio;
+            item._resetBars = resetBars;
+            setupAnalyser();
             audio.addEventListener('ended', () => {
               item.classList.remove('playing');
               btn.textContent = '▶';
+              cancelAnimationFrame(currentAnimFrame);
+              resetBars();
             });
           }
+
+          const ctx = getAudioCtx();
+          if (ctx.state === 'suspended') ctx.resume();
 
           if (item.classList.contains('playing')) {
             audio.pause();
             item.classList.remove('playing');
             btn.textContent = '▶';
+            cancelAnimationFrame(currentAnimFrame);
+            resetBars();
           } else {
             audio.play().catch(() => {});
             item.classList.add('playing');
             btn.textContent = '❚❚';
+            animateBars();
           }
         });
       });
