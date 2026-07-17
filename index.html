@@ -155,10 +155,10 @@
       .tracks-grid {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 28px 40px;
+        gap: 14px; /* Reduced space for mobile view */
       }
       @media(min-width:640px){
-        .tracks-grid { grid-template-columns: repeat(3, 1fr); }
+        .tracks-grid { grid-template-columns: repeat(3, 1fr); gap: 28px 40px; }
       }
       .track-row {
         display: flex;
@@ -200,7 +200,7 @@
       }
       .track-item.playing .waveform span { background: #A78BFA; }
       .track-name {
-        margin-top: 10px;
+        margin-top: 6px;
         font-size: .82rem;
         text-align: center;
         color: rgba(255,255,255,.55);
@@ -265,13 +265,9 @@
       </div>
     </section>
 
-    <!-- ══════════════════════════════════════════
-         ABOUT — centered heading + video slideshow
-    ══════════════════════════════════════════ -->
+    <!-- ABOUT -->
     <section id="about" class="py-24 md:py-32 relative z-10">
       <div class="max-w-6xl mx-auto px-5 sm:px-6">
-
-        <!-- Centered heading block -->
         <div class="reveal text-center mb-16">
           <p class="uppercase tracking-[0.35em] text-accent text-xs sm:text-sm mb-4">About Me</p>
           <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
@@ -294,68 +290,44 @@
           </div>
         </div>
 
-        <!-- VIDEO SLIDESHOW — peek layout (2 videos only) -->
+        <!-- VIDEO SLIDESHOW — non-looping layout -->
         <div class="reveal">
-
           <div class="slideshow-viewport" id="slideshowViewport" style="position:relative;">
-
             <div class="slides-track" id="slidesTrack">
-
               <div class="slide inactive">
-                <!-- SLIDE 1: local mp4 file, place it in the same folder as this html (or update the src path) -->
                 <video id="vid-0" src="SFX_DESIGNED_BY_ME.mp4" controls playsinline title="Some Of My SFX Works"></video>
               </div>
-
               <div class="slide inactive">
-                <!-- SLIDE 2: local mp4 file -->
                 <video id="vid-1" src="Backgound_Score_001.mp4" controls playsinline title="Background Score for this pilot film"></video>
               </div>
-
-            </div><!-- /slides-track -->
-
+            </div>
             <button class="arrow-btn arrow-left" id="arrowLeft" aria-label="Previous video">&#8592;</button>
             <button class="arrow-btn arrow-right" id="arrowRight" aria-label="Next video">&#8594;</button>
-
-          </div><!-- /slideshow-viewport -->
-
+          </div>
           <p class="slide-label" id="slideLabel"></p>
-
           <div class="dot-nav" id="dotNav">
             <div class="dot active" data-index="0"></div>
             <div class="dot" data-index="1"></div>
           </div>
-        </div><!-- /reveal -->
+        </div>
 
       </div>
     </section>
 
-    <!-- ══════════════════════════════════════════
-         PREVIEW SAMPLES — audio grid (Stems & MIDI)
-    ══════════════════════════════════════════ -->
-    <section id="samples" class="py-16 md:py-24 relative z-10">
+    <!-- PREVIEW SAMPLES -->
+    <!-- Adjusted padding on the mobile section to be tighter -->
+    <section id="samples" class="py-12 md:py-24 relative z-10">
       <div class="max-w-6xl mx-auto px-5 sm:px-6">
 
-        <div class="reveal text-center mb-14">
+        <div class="reveal text-center mb-10 md:mb-14">
           <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">
             Sample Tracks <span class="text-accent">(Beats And Scores)</span>
           </h2>
         </div>
 
-        <div class="reveal card rounded-[30px] p-8 md:p-12">
+        <!-- Reduced mobile padding inside the card (p-5 instead of p-8) -->
+        <div class="reveal card rounded-[20px] p-5 sm:p-8 md:p-12">
           <div class="tracks-grid">
-
-            <!--
-              ══════════════════════════════════════════════════════
-              HOW TO ADD YOUR AUDIO FILES:
-              Each .track-item below has a data-audio="..." attribute.
-              Replace that path with the real path/URL to your mp3/wav file,
-              e.g. data-audio="audio/Detonate.mp3"
-              Put your audio files in an "audio/" folder next to this html file
-              (or use a full URL if hosting them elsewhere).
-              Update the track name / BPM / Key text inside <b> and the span
-              to match your actual sample.
-              ══════════════════════════════════════════════════════
-            -->
 
             <div class="track-item" data-audio="Experimental_Dubstep.wav">
               <div class="track-row">
@@ -591,7 +563,7 @@
       }
     </script>
 
-    <!-- Slideshow (2 local videos, auto play/pause on switch) -->
+    <!-- Slideshow (No Looping) -->
     <script>
       const TOTAL  = 2;
       const titles = ['Some Of My SFX Works', 'Background Score for this pilot film'];
@@ -602,52 +574,26 @@
       const label    = document.getElementById('slideLabel');
       const videos   = [document.getElementById('vid-0'), document.getElementById('vid-1')];
 
-      let realIndex  = 0;   // which real slide is active (0..TOTAL-1)
-      let trackIndex = 1;   // position in the extended track (1..TOTAL, 0=clone-last, TOTAL+1=clone-first)
-      let isJumping  = false;
-
-      /* ── 1. Build peek clones (muted decorative copies, no controls) ── */
-      const realSlides = Array.from(track.querySelectorAll('.slide'));
-
-      function prepareClone(slideEl){
-        const vid = slideEl.querySelector('video');
-        if (vid){
-          vid.removeAttribute('id');
-          vid.removeAttribute('controls');
-          vid.muted = true;
-          vid.pause();
-        }
-      }
-
-      const cloneLast = realSlides[TOTAL - 1].cloneNode(true);
-      cloneLast.classList.add('clone');
-      prepareClone(cloneLast);
-      track.insertBefore(cloneLast, realSlides[0]);
-
-      const cloneFirst = realSlides[0].cloneNode(true);
-      cloneFirst.classList.add('clone');
-      prepareClone(cloneFirst);
-      track.appendChild(cloneFirst);
-
+      let realIndex  = 0; 
+      
       const allSlides = Array.from(track.querySelectorAll('.slide'));
 
-      /* ── 2. Position helpers ── */
       function slideWidth() { return allSlides[0].offsetWidth; }
 
-      function getOffset(ti) {
+      function getOffset(index) {
         const vw = viewport.offsetWidth;
         const sw = slideWidth();
-        const centre = (vw - sw) / 2;
-        return centre - ti * sw;
+        const center = (vw - sw) / 2;
+        return center - index * sw;
       }
 
       function applyOffset(animated) {
         track.style.transition = animated ? 'transform 0.52s cubic-bezier(0.4,0,0.2,1)' : 'none';
-        track.style.transform = 'translateX(' + getOffset(trackIndex) + 'px)';
+        track.style.transform = 'translateX(' + getOffset(realIndex) + 'px)';
       }
 
       function updateSlideStates() {
-        allSlides.forEach((s, i) => s.classList.toggle('inactive', i !== trackIndex));
+        allSlides.forEach((s, i) => s.classList.toggle('inactive', i !== realIndex));
       }
       function updateDots() {
         dots.forEach((d, i) => d.classList.toggle('active', i === realIndex));
@@ -655,8 +601,17 @@
       function updateLabel() {
         label.textContent = (realIndex + 1) + ' / ' + TOTAL + ' — ' + titles[realIndex];
       }
+      function updateArrows() {
+        const arrowLeft = document.getElementById('arrowLeft');
+        const arrowRight = document.getElementById('arrowRight');
+        // Dim and disable left arrow if at start
+        arrowLeft.style.opacity = realIndex === 0 ? '0.3' : '1';
+        arrowLeft.style.pointerEvents = realIndex === 0 ? 'none' : 'auto';
+        // Dim and disable right arrow if at end
+        arrowRight.style.opacity = realIndex === TOTAL - 1 ? '0.3' : '1';
+        arrowRight.style.pointerEvents = realIndex === TOTAL - 1 ? 'none' : 'auto';
+      }
 
-      /* ── 3. Play/pause control: stop every video, then play the active one ── */
       function stopAllVideos() {
         videos.forEach(v => { if (v) { v.pause(); } });
       }
@@ -665,72 +620,44 @@
         if (v) { v.play().catch(() => {}); }
       }
 
-      /* ── 4. Wrap-around jump after the slide-transition finishes ── */
-      track.addEventListener('transitionend', () => {
-        if (isJumping) return;
-        if (trackIndex === 0) {
-          isJumping = true;
-          trackIndex = TOTAL;
-          applyOffset(false);
-          requestAnimationFrame(() => requestAnimationFrame(() => { isJumping = false; }));
-        } else if (trackIndex === TOTAL + 1) {
-          isJumping = true;
-          trackIndex = 1;
-          applyOffset(false);
-          requestAnimationFrame(() => requestAnimationFrame(() => { isJumping = false; }));
-        }
-      });
-
-      /* ── 5. Switch slides (used by dots, arrows, and auto-advance on "ended") ── */
-      function switchTo(newReal, dir) {
+      function switchTo(newReal) {
+        if (newReal < 0 || newReal >= TOTAL) return; // Prevent going out of bounds
         stopAllVideos();
-        if (typeof dir === 'number') {
-          trackIndex += dir;
-          realIndex = ((trackIndex - 1) % TOTAL + TOTAL) % TOTAL;
-        } else {
-          realIndex  = ((newReal % TOTAL) + TOTAL) % TOTAL;
-          trackIndex = realIndex + 1;
-        }
+        realIndex = newReal;
         applyOffset(true);
         updateSlideStates();
         updateDots();
         updateLabel();
+        updateArrows();
         playCurrent();
       }
 
-      function goTo(newReal) { switchTo(newReal); }
-      function stepBy(dir)   { switchTo(null, dir); }
+      function stepBy(dir) { switchTo(realIndex + dir); }
 
-      /* ── 6. Controls ── */
       document.getElementById('arrowLeft').addEventListener('click',  () => stepBy(-1));
       document.getElementById('arrowRight').addEventListener('click', () => stepBy(+1));
-      dots.forEach(dot => dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index))));
+      dots.forEach(dot => dot.addEventListener('click', () => switchTo(parseInt(dot.dataset.index))));
 
-      /* ── 7. Auto-advance to the next slide when a video finishes ── */
       videos.forEach((v, i) => {
         if (!v) return;
         v.addEventListener('ended', () => { if (i === realIndex) stepBy(+1); });
       });
 
-      /* ── 8. Resize ── */
       window.addEventListener('resize', () => applyOffset(false));
 
-      /* ── 9. Init ── */
       function init() {
         applyOffset(false);
         updateSlideStates();
         updateDots();
         updateLabel();
+        updateArrows();
       }
       window.addEventListener('load', init);
       setTimeout(init, 120);
-
-      label.textContent = '1 / ' + TOTAL + ' — ' + titles[0];
     </script>
 
-    <!-- Preview Samples: REAL-TIME audio-reactive waveform bars (Web Audio API) -->
+    <!-- Preview Samples: REAL-TIME audio-reactive waveform bars -->
     <script>
-      // Build the bar elements for every waveform (start flat, they animate live once playing)
       document.querySelectorAll('.waveform').forEach(wf => {
         const barCount = 40;
         for (let i = 0; i < barCount; i++) {
@@ -740,7 +667,6 @@
         }
       });
 
-      // One shared AudioContext for the whole page (browsers limit how many you can create)
       let audioCtx = null;
       function getAudioCtx() {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -760,7 +686,7 @@
           const ctx = getAudioCtx();
           source = ctx.createMediaElementSource(audio);
           analyser = ctx.createAnalyser();
-          analyser.fftSize = 128; // 64 frequency bins — plenty for 40 visual bars
+          analyser.fftSize = 128; 
           dataArray = new Uint8Array(analyser.frequencyBinCount);
           source.connect(analyser);
           analyser.connect(ctx.destination);
@@ -769,8 +695,8 @@
         function animateBars() {
           analyser.getByteFrequencyData(dataArray);
           bars.forEach((bar, i) => {
-            const value = dataArray[i % dataArray.length]; // 0-255
-            const height = 4 + (value / 255) * 26; // 4px min, 30px max
+            const value = dataArray[i % dataArray.length];
+            const height = 4 + (value / 255) * 26;
             bar.style.height = height + 'px';
           });
           currentAnimFrame = requestAnimationFrame(animateBars);
@@ -781,7 +707,6 @@
         }
 
         btn.addEventListener('click', () => {
-          // stop every other currently playing track first
           document.querySelectorAll('.track-item.playing').forEach(other => {
             if (other !== item) {
               other.classList.remove('playing');
