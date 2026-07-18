@@ -61,7 +61,7 @@
       ::-webkit-scrollbar{width:5px;}
       ::-webkit-scrollbar-thumb{background:#8B5CF6;border-radius:999px;}
 
-      /* ── VIDEO SLIDESHOW — peek layout ── */
+      /* ── PEEK SLIDESHOW (shared: video / tracks / works) ── */
 
       .slideshow-viewport {
         overflow: hidden;
@@ -142,6 +142,37 @@
 
       .slide-label { text-align:center; margin-top:12px; font-size:0.78rem; color:rgba(255,255,255,0.32); letter-spacing:0.07em; }
 
+      /* ── TRACKS & WORKS sliders: wider slides than the video peek (they hold multiple items) ── */
+      .tracks-viewport .slide,
+      .works-viewport .slide {
+        flex: 0 0 94%;
+        width: 94%;
+      }
+      @media(max-width:640px){
+        .tracks-viewport .slide,
+        .works-viewport .slide {
+          flex: 0 0 90%;
+          width: 90%;
+        }
+      }
+
+      /* One "page" of 4 tracks, stacked in a single column */
+      .tracks-page {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+
+      /* One "page" of 2 featured-work cards, side by side */
+      .works-page {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+      @media(min-width:640px){
+        .works-page { gap: 24px; }
+      }
+
       @media(max-width:640px){
         .works-card-title{font-size:1.1rem!important;}
         .works-card-desc{font-size:0.8rem!important;margin-bottom:0.75rem!important;}
@@ -154,7 +185,7 @@
       /* ── PREVIEW SAMPLES — compact single-row list on mobile ── */
       @media(max-width:640px){
         #samples .card { padding: 0.5rem !important; border-radius: 18px !important; }
-        .tracks-grid { gap: 0; }
+        .tracks-page { gap: 0; }
         .track-item {
           display: flex;
           align-items: center;
@@ -183,22 +214,14 @@
       /* ── PREVIEW SAMPLES — tighter mobile layout ── */
       @media(max-width:640px){
         #samples .card { padding: 1.25rem !important; border-radius: 22px !important; }
-        .tracks-grid { gap: 16px; }
+        .tracks-page { gap: 16px; }
         .track-row { gap: 10px; }
         .track-play { width: 30px; height: 30px; font-size: .7rem; }
         .waveform { height: 22px; }
         .track-name { margin-top: 6px; font-size: .75rem; }
       }
 
-      /* ── PREVIEW SAMPLES — audio grid ── */
-      .tracks-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 28px 40px;
-      }
-      @media(min-width:640px){
-        .tracks-grid { grid-template-columns: repeat(3, 1fr); }
-      }
+      /* ── PREVIEW SAMPLES — track row ── */
       .track-row {
         display: flex;
         align-items: center;
@@ -374,7 +397,7 @@
     </section>
 
     <!-- ══════════════════════════════════════════
-         PREVIEW SAMPLES — audio grid (Stems & MIDI)
+         PREVIEW SAMPLES — audio slideshow (4 tracks per page)
     ══════════════════════════════════════════ -->
     <section id="samples" class="py-8 sm:py-16 md:py-24 relative z-10">
       <div class="max-w-6xl mx-auto px-5 sm:px-6">
@@ -386,85 +409,99 @@
         </div>
 
         <div class="reveal card rounded-[30px] p-8 md:p-12">
-          <div class="tracks-grid">
 
-            <!--
-              ══════════════════════════════════════════════════════
-              HOW TO ADD YOUR AUDIO FILES:
-              Each .track-item below has a data-audio="..." attribute.
-              Replace that path with the real path/URL to your mp3/wav file,
-              e.g. data-audio="audio/Detonate.mp3"
-              Put your audio files in an "audio/" folder next to this html file
-              (or use a full URL if hosting them elsewhere).
-              Update the track name / BPM / Key text inside <b> and the span
-              to match your actual sample.
-              ══════════════════════════════════════════════════════
-            -->
+          <div class="slideshow-viewport tracks-viewport" id="tracksViewport">
+            <div class="slides-track" id="tracksTrack">
 
-            <div class="track-item" data-audio="Experimental_Dubstep.wav">
-              <div class="track-row">
-                <button class="track-play" aria-label="Play Experimental_Dubstep">▶</button>
-                <div class="waveform"></div>
+              <!-- PAGE 1: first 4 tracks -->
+              <div class="slide inactive">
+                <div class="tracks-page">
+
+                  <div class="track-item" data-audio="Experimental_Dubstep.wav">
+                    <div class="track-row">
+                      <button class="track-play" aria-label="Play Experimental_Dubstep">▶</button>
+                      <div class="waveform"></div>
+                    </div>
+                    <p class="track-name"><b>Experimental Dubstep</b></p>
+                  </div>
+
+                  <div class="track-item" data-audio="Action_score_001.wav">
+                    <div class="track-row">
+                      <button class="track-play" aria-label="Play Action_score_001">▶</button>
+                      <div class="waveform"></div>
+                    </div>
+                    <p class="track-name"><b>Action score 001</b></p>
+                  </div>
+
+                  <div class="track-item" data-audio="Action_score_002.wav">
+                    <div class="track-row">
+                      <button class="track-play" aria-label="Play Action_score_002">▶</button>
+                      <div class="waveform"></div>
+                    </div>
+                    <p class="track-name"><b>Action score 002</b></p>
+                  </div>
+
+                  <div class="track-item" data-audio="BadVibes_001.wav">
+                    <div class="track-row">
+                      <button class="track-play" aria-label="Play BadVibes_001">▶</button>
+                      <div class="waveform"></div>
+                    </div>
+                    <p class="track-name"><b>BadVibes 001</b></p>
+                  </div>
+
+                </div>
               </div>
-              <p class="track-name"><b>Experimental Dubstep</b></p>
-            </div>
 
-            <div class="track-item" data-audio="Action_score_001.wav">
-              <div class="track-row">
-                <button class="track-play" aria-label="Play Action_score_001">▶</button>
-                <div class="waveform"></div>
-              </div>
-              <p class="track-name"><b>Action score 001</b></p>
-            </div>
+              <!-- PAGE 2: last 4 tracks -->
+              <div class="slide inactive">
+                <div class="tracks-page">
 
-            <div class="track-item" data-audio="Action_score_002.wav">
-              <div class="track-row">
-                <button class="track-play" aria-label="Play Action_score_002">▶</button>
-                <div class="waveform"></div>
-              </div>
-              <p class="track-name"><b>Action score 002</b> </p>
-            </div>
+                  <div class="track-item" data-audio="BadVibes_002.wav">
+                    <div class="track-row">
+                      <button class="track-play" aria-label="Play BadVibes_002">▶</button>
+                      <div class="waveform"></div>
+                    </div>
+                    <p class="track-name"><b>BadVibes 002</b></p>
+                  </div>
 
-            <div class="track-item" data-audio="BadVibes_001.wav">
-              <div class="track-row">
-                <button class="track-play" aria-label="Play BadVibes_001">▶</button>
-                <div class="waveform"></div>
-              </div>
-              <p class="track-name"><b>BadVibes 001</b></p>
-            </div>
+                  <div class="track-item" data-audio="Experimental_001.wav">
+                    <div class="track-row">
+                      <button class="track-play" aria-label="Play Experimental_001">▶</button>
+                      <div class="waveform"></div>
+                    </div>
+                    <p class="track-name"><b>Experimental 001</b></p>
+                  </div>
 
-            <div class="track-item" data-audio="BadVibes_002.wav">
-              <div class="track-row">
-                <button class="track-play" aria-label="Play BadVibes_002">▶</button>
-                <div class="waveform"></div>
-              </div>
-              <p class="track-name"><b>BadVibes 002</b></p>
-            </div>
+                  <div class="track-item" data-audio="Experimental_002.wav">
+                    <div class="track-row">
+                      <button class="track-play" aria-label="Play Experimental_002">▶</button>
+                      <div class="waveform"></div>
+                    </div>
+                    <p class="track-name"><b>Experimental 002</b></p>
+                  </div>
 
-            <div class="track-item" data-audio="Experimental_001.wav">
-              <div class="track-row">
-                <button class="track-play" aria-label="Play Experimental_001">▶</button>
-                <div class="waveform"></div>
-              </div>
-              <p class="track-name"><b>Experimental 001</b></p>
-            </div>
+                  <div class="track-item" data-audio="Suspense_001.wav">
+                    <div class="track-row">
+                      <button class="track-play" aria-label="Play Suspense_001">▶</button>
+                      <div class="waveform"></div>
+                    </div>
+                    <p class="track-name"><b>Suspense 001</b></p>
+                  </div>
 
-            <div class="track-item" data-audio="Experimental_002.wav">
-              <div class="track-row">
-                <button class="track-play" aria-label="Play Experimental_002">▶</button>
-                <div class="waveform"></div>
+                </div>
               </div>
-              <p class="track-name"><b>Experimental 002</b></p>
-            </div>
 
-            <div class="track-item" data-audio="Suspense_001.wav">
-              <div class="track-row">
-                <button class="track-play" aria-label="Play Suspense_001">▶</button>
-                <div class="waveform"></div>
-              </div>
-              <p class="track-name"><b>Suspense 001</b></p>
-            </div>
+            </div><!-- /slides-track -->
+
+            <button class="arrow-btn arrow-left" id="tracksArrowLeft" aria-label="Previous tracks">&#8592;</button>
+            <button class="arrow-btn arrow-right" id="tracksArrowRight" aria-label="Next tracks">&#8594;</button>
+          </div><!-- /slideshow-viewport -->
+
+          <div class="dot-nav" id="tracksDotNav">
+            <div class="dot active" data-index="0"></div>
+            <div class="dot" data-index="1"></div>
           </div>
+
         </div>
       </div>
     </section>
@@ -496,76 +533,114 @@
       </div>
     </section>
 
-    <!-- WORKS -->
+    <!-- ══════════════════════════════════════════
+         WORKS — featured music slideshow (2 cards per page)
+    ══════════════════════════════════════════ -->
     <section id="works" class="py-12 sm:py-24 md:py-32 relative">
       <div class="max-w-7xl mx-auto px-6">
         <div class="mb-10 sm:mb-20">
           <p class="uppercase tracking-[0.3em] text-accent text-sm mb-4 sm:mb-5">Portfolio</p>
           <h2 class="text-5xl md:text-6xl font-bold">Featured Music</h2>
         </div>
-        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 
-          <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
-            <a href="https://youtu.be/m38Be7tvYxw?si=LjHh9vDqzbrk4Y7T"><img src="https://img.youtube.com/vi/m38Be7tvYxw/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Iniya Nizhaley"/></a>
-            <div class="works-card-body p-4 sm:p-6">
-              <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Shortfilm</span></div>
-              <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Iniya Nizhaley</h3>
-              <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Done Backgroundscore for this. This was my first Shortfilm as a composer. (Released 2023)</p>
-              <a href="https://youtu.be/m38Be7tvYxw?si=LjHh9vDqzbrk4Y7T" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on Youtube →</a>
-            </div>
+        <div class="reveal">
+          <div class="slideshow-viewport works-viewport" id="worksViewport">
+            <div class="slides-track" id="worksTrack">
+
+              <!-- PAGE 1 -->
+              <div class="slide inactive">
+                <div class="works-page">
+
+                  <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden">
+                    <a href="https://youtu.be/m38Be7tvYxw?si=LjHh9vDqzbrk4Y7T"><img src="https://img.youtube.com/vi/m38Be7tvYxw/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Iniya Nizhaley"/></a>
+                    <div class="works-card-body p-4 sm:p-6">
+                      <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Shortfilm</span></div>
+                      <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Iniya Nizhaley</h3>
+                      <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Done Backgroundscore for this. This was my first Shortfilm as a composer. (Released 2023)</p>
+                      <a href="https://youtu.be/m38Be7tvYxw?si=LjHh9vDqzbrk4Y7T" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on Youtube →</a>
+                    </div>
+                  </div>
+
+                  <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden">
+                    <a href="https://youtu.be/OHMiYdZ6jv4?si=wQaZZXe1xpcAD9t2"><img src="https://img.youtube.com/vi/OHMiYdZ6jv4/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Natchathiram Yengu Selgiratho"/></a>
+                    <div class="works-card-body p-4 sm:p-6">
+                      <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Shortfilm</span></div>
+                      <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Natchathiram Yengu Selgiratho</h3>
+                      <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Background score ,music production and final mixing is done by me for the shortfilm.</p>
+                      <a href="https://youtu.be/OHMiYdZ6jv4?si=wQaZZXe1xpcAD9t2" target="_blank" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on YouTube →</a>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- PAGE 2 -->
+              <div class="slide inactive">
+                <div class="works-page">
+
+                  <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden">
+                    <a href="https://youtu.be/bf8Du4PW_2Q?si=NxLWW3gGaBf41jl4"><img src="https://img.youtube.com/vi/bf8Du4PW_2Q/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Double X"/></a>
+                    <div class="works-card-body p-4 sm:p-6">
+                      <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Shortfilm</span></div>
+                      <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Double X</h3>
+                      <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Cinematic background score and emotional music production.</p>
+                      <a href="https://youtu.be/bf8Du4PW_2Q?si=NxLWW3gGaBf41jl4" target="_blank" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on YouTube →</a>
+                    </div>
+                  </div>
+
+                  <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden">
+                    <a href="https://youtu.be/U1Ku8HWfVU4?si=XnCyUABCgEjm2RBN"><img src="https://img.youtube.com/vi/U1Ku8HWfVU4/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Pyaar Prema Kaadhal"/></a>
+                    <div class="works-card-body p-4 sm:p-6">
+                      <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Web series</span></div>
+                      <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Pyaar Prema Kadhal</h3>
+                      <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">I composed and produced the background score for this web series.</p>
+                      <a href="https://youtu.be/U1Ku8HWfVU4?si=XnCyUABCgEjm2RBN" target="_blank" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on Youtube →</a>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- PAGE 3 -->
+              <div class="slide inactive">
+                <div class="works-page">
+
+                  <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden">
+                    <a href="https://youtu.be/uAXpGK-E_dE?si=R3XG7pevCuO-mORj"><img src="https://img.youtube.com/vi/uAXpGK-E_dE/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Tolet"/></a>
+                    <div class="works-card-body p-4 sm:p-6">
+                      <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Webseries</span></div>
+                      <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Tolet</h3>
+                      <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">I composed and produced the background score for this series.</p>
+                      <a href="https://youtu.be/uAXpGK-E_dE?si=R3XG7pevCuO-mORj" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on Youtube →</a>
+                    </div>
+                  </div>
+
+                  <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden">
+                    <a href="https://youtu.be/X5muF460Tnc?si=hdqr8kE7iu7y6DSE"><img src="https://img.youtube.com/vi/X5muF460Tnc/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Soda The Life of KissaMan"/></a>
+                    <div class="works-card-body p-4 sm:p-6">
+                      <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-pink-500/20 text-pink-400 text-xs">Single</span></div>
+                      <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Soda The Life of KissaMan</h3>
+                      <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Produced and mix mastered this song for Makkal Hiphop Rapper</p>
+                      <a href="https://youtu.be/X5muF460Tnc?si=hdqr8kE7iu7y6DSE" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on Youtube →</a>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div><!-- /slides-track -->
+
+            <button class="arrow-btn arrow-left" id="worksArrowLeft" aria-label="Previous works">&#8592;</button>
+            <button class="arrow-btn arrow-right" id="worksArrowRight" aria-label="Next works">&#8594;</button>
+          </div><!-- /slideshow-viewport -->
+
+          <div class="dot-nav" id="worksDotNav">
+            <div class="dot active" data-index="0"></div>
+            <div class="dot" data-index="1"></div>
+            <div class="dot" data-index="2"></div>
           </div>
+        </div><!-- /reveal -->
 
-          <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
-            <a href="https://youtu.be/OHMiYdZ6jv4?si=wQaZZXe1xpcAD9t2"><img src="https://img.youtube.com/vi/OHMiYdZ6jv4/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Natchathiram Yengu Selgiratho"/></a>
-             <div class="works-card-body p-4 sm:p-6">
-              <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Shortfilm</span></div>
-              <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Natchathiram Yengu Selgiratho</h3>
-              <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Background score ,music production and final mixing is done by me for the shortfilm.</p>
-              <a href="https://youtu.be/OHMiYdZ6jv4?si=wQaZZXe1xpcAD9t2" target="_blank" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on YouTube →</a>
-            </div>
-          </div>
-
-          <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
-            <a href="https://youtu.be/bf8Du4PW_2Q?si=NxLWW3gGaBf41jl4"><img src="https://img.youtube.com/vi/bf8Du4PW_2Q/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Double X"/></a>
-            <div class="works-card-body p-4 sm:p-6">
-              <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Shortfilm</span></div>
-              <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Double X</h3>
-              <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Cinematic background score and emotional music production.</p>
-              <a href="https://youtu.be/bf8Du4PW_2Q?si=NxLWW3gGaBf41jl4" target="_blank" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on YouTube →</a>
-            </div>
-          </div>
-
-          <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
-            <a href="https://youtu.be/U1Ku8HWfVU4?si=XnCyUABCgEjm2RBN"><img src="https://img.youtube.com/vi/U1Ku8HWfVU4/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Pyaar Prema Kaadhal"/></a>
-            <div class="works-card-body p-4 sm:p-6">
-              <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Web series</span></div>
-              <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Pyaar Prema Kadhal</h3>
-              <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">I composed and produced the background score for this web series.</p>
-              <a href="https://youtu.be/U1Ku8HWfVU4?si=XnCyUABCgEjm2RBN" target="_blank" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on Youtube →</a>
-            </div>
-          </div>
-
-          <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
-            <a href="https://youtu.be/uAXpGK-E_dE?si=R3XG7pevCuO-mORj"><img src="https://img.youtube.com/vi/uAXpGK-E_dE/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Tolet"/></a>
-            <div class="works-card-body p-4 sm:p-6">
-              <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs">YouTube</span><span class="works-card-badge px-3 py-1 rounded-full bg-white/5 text-zinc-400 text-xs">Webseries</span></div>
-              <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Tolet</h3>
-              <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">I composed and produced the background score for this series.</p>
-              <a href="https://youtu.be/uAXpGK-E_dE?si=R3XG7pevCuO-mORj" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on Youtube →</a>
-            </div>
-          </div>
-
-          <div class="card rounded-[20px] sm:rounded-[28px] overflow-hidden reveal">
-            <a href="https://youtu.be/X5muF460Tnc?si=hdqr8kE7iu7y6DSE"><img src="https://img.youtube.com/vi/X5muF460Tnc/hqdefault.jpg" class="works-card-img w-full object-cover" style="height:180px;" alt="Soda The Life of KissaMan"/></a>
-            <div class="works-card-body p-4 sm:p-6">
-              <div class="flex flex-wrap items-center gap-2 mb-3"><span class="works-card-badge px-3 py-1 rounded-full bg-pink-500/20 text-pink-400 text-xs">Single</span></div>
-              <h3 class="works-card-title text-xl sm:text-2xl font-bold mb-2">Soda The Life of KissaMan</h3>
-              <p class="works-card-desc text-zinc-400 text-sm leading-relaxed mb-4">Produced and mix mastered this song for Makkal Hiphop Rapper</p>
-              <a href="https://youtu.be/X5muF460Tnc?si=hdqr8kE7iu7y6DSE" class="works-card-link inline-flex items-center gap-1 text-accent hover:text-accent-light transition text-sm">Watch on Youtube →</a>
-            </div>
-          </div>
-
-        </div>
       </div>
     </section>
 
@@ -642,7 +717,7 @@
 
       const track      = document.getElementById('slidesTrack');
       const viewport   = document.getElementById('slideshowViewport');
-      const dots       = document.querySelectorAll('.dot');
+      const dots       = document.querySelectorAll('#dotNav .dot');
       const label      = document.getElementById('slideLabel');
       const videos     = [document.getElementById('vid-0'), document.getElementById('vid-1')];
       const arrowLeft  = document.getElementById('arrowLeft');
@@ -748,6 +823,89 @@
       setTimeout(init, 120);
 
       label.textContent = '1 / ' + TOTAL + ' — ' + titles[0];
+    </script>
+
+    <!-- Generic paginated slideshow (reused for Tracks and Works — no video logic needed) -->
+    <script>
+      function initPagedSlideshow(opts) {
+        const viewport   = document.getElementById(opts.viewportId);
+        const track      = document.getElementById(opts.trackId);
+        const arrowLeft  = document.getElementById(opts.arrowLeftId);
+        const arrowRight = document.getElementById(opts.arrowRightId);
+        const dots       = document.querySelectorAll('#' + opts.dotNavId + ' .dot');
+        const slides     = Array.from(track.querySelectorAll('.slide'));
+        const total      = slides.length;
+
+        let realIndex = 0;
+
+        function slideWidth() { return slides[0].offsetWidth; }
+
+        function getOffset(index) {
+          const vw = viewport.offsetWidth;
+          const sw = slideWidth();
+          const centre = (vw - sw) / 2;
+          return centre - index * sw;
+        }
+
+        function applyOffset(animated) {
+          track.style.transition = animated ? 'transform 0.52s cubic-bezier(0.4,0,0.2,1)' : 'none';
+          track.style.transform = 'translateX(' + getOffset(realIndex) + 'px)';
+        }
+
+        function updateSlideStates() {
+          slides.forEach((s, i) => s.classList.toggle('inactive', i !== realIndex));
+        }
+        function updateDots() {
+          dots.forEach((d, i) => d.classList.toggle('active', i === realIndex));
+        }
+        function updateArrows() {
+          const atStart = realIndex === 0;
+          const atEnd   = realIndex === total - 1;
+          arrowLeft.style.opacity = atStart ? '0.3' : '1';
+          arrowLeft.style.pointerEvents = atStart ? 'none' : 'auto';
+          arrowRight.style.opacity = atEnd ? '0.3' : '1';
+          arrowRight.style.pointerEvents = atEnd ? 'none' : 'auto';
+        }
+
+        function goTo(index) {
+          if (index < 0 || index > total - 1 || index === realIndex) return;
+          realIndex = index;
+          applyOffset(true);
+          updateSlideStates();
+          updateDots();
+          updateArrows();
+        }
+
+        arrowLeft.addEventListener('click',  () => goTo(realIndex - 1));
+        arrowRight.addEventListener('click', () => goTo(realIndex + 1));
+        dots.forEach(dot => dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index))));
+        window.addEventListener('resize', () => applyOffset(false));
+
+        function init() {
+          applyOffset(false);
+          updateSlideStates();
+          updateDots();
+          updateArrows();
+        }
+        window.addEventListener('load', init);
+        setTimeout(init, 120);
+      }
+
+      initPagedSlideshow({
+        viewportId: 'tracksViewport',
+        trackId: 'tracksTrack',
+        arrowLeftId: 'tracksArrowLeft',
+        arrowRightId: 'tracksArrowRight',
+        dotNavId: 'tracksDotNav'
+      });
+
+      initPagedSlideshow({
+        viewportId: 'worksViewport',
+        trackId: 'worksTrack',
+        arrowLeftId: 'worksArrowLeft',
+        arrowRightId: 'worksArrowRight',
+        dotNavId: 'worksDotNav'
+      });
     </script>
 
     <!-- Preview Samples: REAL-TIME audio-reactive waveform bars (Web Audio API) -->
