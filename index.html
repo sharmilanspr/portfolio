@@ -151,14 +151,53 @@
         .works-card-img{height:140px!important;}
       }
 
+      /* ── PREVIEW SAMPLES — compact single-row list on mobile ── */
+      @media(max-width:640px){
+        #samples .card { padding: 0.5rem !important; border-radius: 18px !important; }
+        .tracks-grid { gap: 0; }
+        .track-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 11px 6px;
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .track-item:last-child { border-bottom: none; }
+        .track-row { flex: 1; min-width: 0; gap: 10px; }
+        .track-play { width: 30px; height: 30px; font-size: .68rem; }
+        .waveform { flex: 1; min-width: 0; height: 20px; }
+        .track-name {
+          order: -1;
+          margin-top: 0;
+          font-size: .78rem;
+          text-align: left;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          flex: 0 0 32%;
+          max-width: 32%;
+          color: rgba(255,255,255,.7);
+        }
+      }
+
+      /* ── PREVIEW SAMPLES — tighter mobile layout ── */
+      @media(max-width:640px){
+        #samples .card { padding: 1.25rem !important; border-radius: 22px !important; }
+        .tracks-grid { gap: 16px; }
+        .track-row { gap: 10px; }
+        .track-play { width: 30px; height: 30px; font-size: .7rem; }
+        .waveform { height: 22px; }
+        .track-name { margin-top: 6px; font-size: .75rem; }
+      }
+
       /* ── PREVIEW SAMPLES — audio grid ── */
       .tracks-grid {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 14px; /* Reduced space for mobile view */
+        gap: 28px 40px;
       }
       @media(min-width:640px){
-        .tracks-grid { grid-template-columns: repeat(3, 1fr); gap: 28px 40px; }
+        .tracks-grid { grid-template-columns: repeat(3, 1fr); }
       }
       .track-row {
         display: flex;
@@ -200,12 +239,17 @@
       }
       .track-item.playing .waveform span { background: #A78BFA; }
       .track-name {
-        margin-top: 6px;
+        margin-top: 10px;
         font-size: .82rem;
         text-align: center;
         color: rgba(255,255,255,.55);
       }
       .track-name b { color: #fff; font-weight: 600; }
+
+      /* ── MOBILE: tighten up spacing between/within sections ── */
+      @media(max-width:640px){
+        section { scroll-margin-top: 80px; }
+      }
     </style>
   </head>
 
@@ -237,21 +281,21 @@
     </header>
 
     <!-- HERO -->
-    <section class="min-h-screen flex items-center relative overflow-hidden pt-32 pb-20">
+    <section class="min-h-[80vh] sm:min-h-screen flex items-center relative overflow-hidden pt-24 pb-10 sm:pt-32 sm:pb-20">
       <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-700/20 rounded-full blur-3xl"></div>
       <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-700/20 rounded-full blur-3xl"></div>
       <div class="max-w-7xl mx-auto px-5 sm:px-6 relative z-10">
-        <div class="grid lg:grid-cols-2 gap-14 lg:gap-16 items-center">
+        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div class="text-center lg:text-left">
-            <p class="reveal uppercase tracking-[0.3em] text-accent text-xs sm:text-sm mb-6">Music Producer • Composer • Mix Master engineer</p>
-            <h1 class="reveal text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-8">
+            <p class="reveal uppercase tracking-[0.3em] text-accent text-xs sm:text-sm mb-4 sm:mb-6">Music Producer • Composer • Mix Master engineer</p>
+            <h1 class="reveal text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-5 sm:mb-8">
               SHARMILAN<span class="text-accent">.R</span>
             </h1>
-            <p class="reveal text-zinc-400 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mb-10 mx-auto lg:mx-0">
+            <p class="reveal text-zinc-400 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mb-7 sm:mb-10 mx-auto lg:mx-0">
               I'm a composer and music producer who enjoys creating music. Always exploring new sounds and ideas. I love creating melodies, experimenting with new sounds.
             </p>
-            <div class="reveal flex flex-wrap justify-center lg:justify-start gap-4 mb-14">
-              <a href="#works" class="bg-white text-black px-7 sm:px-8 py-4 rounded-full font-medium hover:bg-zinc-200 transition">Listen To My Work</a>
+            <div class="reveal flex flex-wrap justify-center lg:justify-start gap-4 mb-8 sm:mb-14">
+              <a href="#samples" class="bg-white text-black px-7 sm:px-8 py-4 rounded-full font-medium hover:bg-zinc-200 transition">Listen To My Work</a>
               <a href="#contact" class="border border-zinc-700 px-7 sm:px-8 py-4 rounded-full hover:border-accent hover:text-accent transition">Hire Me</a>
             </div>
           </div>
@@ -265,18 +309,22 @@
       </div>
     </section>
 
-    <!-- ABOUT -->
-    <section id="about" class="py-24 md:py-32 relative z-10">
+    <!-- ══════════════════════════════════════════
+         ABOUT — centered heading + video slideshow
+    ══════════════════════════════════════════ -->
+    <section id="about" class="py-12 sm:py-24 md:py-32 relative z-10">
       <div class="max-w-6xl mx-auto px-5 sm:px-6">
-        <div class="reveal text-center mb-16">
-          <p class="uppercase tracking-[0.35em] text-accent text-xs sm:text-sm mb-4">About Me</p>
-          <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
+
+        <!-- Centered heading block -->
+        <div class="reveal text-center mb-8 sm:mb-16">
+          <p class="uppercase tracking-[0.35em] text-accent text-xs sm:text-sm mb-3 sm:mb-4">About Me</p>
+          <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-4 sm:mb-6">
             Composer | Producer | Sound Designer
           </h2>
           <p class="text-zinc-400 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-4">
             I graduated with a B.E. in Computer Science and Engineering from Vels University. While studying, I developed a strong passion for music and began my journey in FL Studio before moving to Ableton Live. Since then, I've worked on short films, pilot projects, albums, and songs, continuing to grow as a composer and music producer.
           </p>
-          <p class="text-zinc-400 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-10">
+          <p class="text-zinc-400 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-6 sm:mb-10">
             I work on composition, music production, sound design, arranging, and mixing, and I'm always experimenting with new sounds and techniques
           </p>
           <div class="flex flex-wrap justify-center gap-3">
@@ -290,44 +338,68 @@
           </div>
         </div>
 
-        <!-- VIDEO SLIDESHOW — non-looping layout -->
+        <!-- VIDEO SLIDESHOW — peek layout (2 videos only) -->
         <div class="reveal">
+
           <div class="slideshow-viewport" id="slideshowViewport" style="position:relative;">
+
             <div class="slides-track" id="slidesTrack">
+
               <div class="slide inactive">
+                <!-- SLIDE 1: local mp4 file, place it in the same folder as this html (or update the src path) -->
                 <video id="vid-0" src="SFX_DESIGNED_BY_ME.mp4" controls playsinline title="Some Of My SFX Works"></video>
               </div>
+
               <div class="slide inactive">
+                <!-- SLIDE 2: local mp4 file -->
                 <video id="vid-1" src="Backgound_Score_001.mp4" controls playsinline title="Background Score for this pilot film"></video>
               </div>
-            </div>
+
+            </div><!-- /slides-track -->
+
             <button class="arrow-btn arrow-left" id="arrowLeft" aria-label="Previous video">&#8592;</button>
             <button class="arrow-btn arrow-right" id="arrowRight" aria-label="Next video">&#8594;</button>
-          </div>
+
+          </div><!-- /slideshow-viewport -->
+
           <p class="slide-label" id="slideLabel"></p>
+
           <div class="dot-nav" id="dotNav">
             <div class="dot active" data-index="0"></div>
             <div class="dot" data-index="1"></div>
           </div>
-        </div>
+        </div><!-- /reveal -->
 
       </div>
     </section>
 
-    <!-- PREVIEW SAMPLES -->
-    <!-- Adjusted padding on the mobile section to be tighter -->
-    <section id="samples" class="py-12 md:py-24 relative z-10">
+    <!-- ══════════════════════════════════════════
+         PREVIEW SAMPLES — audio grid (Stems & MIDI)
+    ══════════════════════════════════════════ -->
+    <section id="samples" class="py-8 sm:py-16 md:py-24 relative z-10">
       <div class="max-w-6xl mx-auto px-5 sm:px-6">
 
-        <div class="reveal text-center mb-10 md:mb-14">
+        <div class="reveal text-center mb-8 sm:mb-14">
           <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">
             Sample Tracks <span class="text-accent">(Beats And Scores)</span>
           </h2>
         </div>
 
-        <!-- Reduced mobile padding inside the card (p-5 instead of p-8) -->
-        <div class="reveal card rounded-[20px] p-5 sm:p-8 md:p-12">
+        <div class="reveal card rounded-[30px] p-8 md:p-12">
           <div class="tracks-grid">
+
+            <!--
+              ══════════════════════════════════════════════════════
+              HOW TO ADD YOUR AUDIO FILES:
+              Each .track-item below has a data-audio="..." attribute.
+              Replace that path with the real path/URL to your mp3/wav file,
+              e.g. data-audio="audio/Detonate.mp3"
+              Put your audio files in an "audio/" folder next to this html file
+              (or use a full URL if hosting them elsewhere).
+              Update the track name / BPM / Key text inside <b> and the span
+              to match your actual sample.
+              ══════════════════════════════════════════════════════
+            -->
 
             <div class="track-item" data-audio="Experimental_Dubstep.wav">
               <div class="track-row">
@@ -398,10 +470,10 @@
     </section>
 
     <!-- SERVICES -->
-    <section id="services" class="py-24 md:py-32">
+    <section id="services" class="py-12 sm:py-24 md:py-32">
       <div class="max-w-7xl mx-auto px-5 sm:px-6">
-        <div class="mb-20 text-center">
-          <p class="uppercase tracking-[0.3em] text-accent text-sm mb-5">Services</p>
+        <div class="mb-10 sm:mb-20 text-center">
+          <p class="uppercase tracking-[0.3em] text-accent text-sm mb-4 sm:mb-5">Services</p>
           <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold">What I Create</h2>
         </div>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -425,10 +497,10 @@
     </section>
 
     <!-- WORKS -->
-    <section id="works" class="py-32 relative">
+    <section id="works" class="py-12 sm:py-24 md:py-32 relative">
       <div class="max-w-7xl mx-auto px-6">
-        <div class="mb-20">
-          <p class="uppercase tracking-[0.3em] text-accent text-sm mb-5">Portfolio</p>
+        <div class="mb-10 sm:mb-20">
+          <p class="uppercase tracking-[0.3em] text-accent text-sm mb-4 sm:mb-5">Portfolio</p>
           <h2 class="text-5xl md:text-6xl font-bold">Featured Music</h2>
         </div>
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -498,24 +570,24 @@
     </section>
 
     <!-- ARTIST SECTION -->
-    <section class="py-32 relative">
+    <section class="py-8 sm:py-24 md:py-32 relative">
       <div class="max-w-7xl mx-auto px-6">
-        <div class="mt-24">
-          <div class="card rounded-[40px] p-12 md:p-16 relative overflow-hidden">
+        <div class="mt-0 sm:mt-24">
+          <div class="card rounded-[30px] sm:rounded-[40px] p-6 sm:p-12 md:p-16 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-96 h-96 bg-accent/10 blur-3xl rounded-full"></div>
-            <div class="grid md:grid-cols-2 gap-12 items-center relative z-10">
-              <div>
-                <p class="uppercase tracking-[0.3em] text-accent text-sm mb-5">Artist Profile</p>
-                <h3 class="text-5xl font-bold leading-tight mb-6">SHARMILAN.R</h3>
-                <p class="text-zinc-400 leading-relaxed text-lg mb-8">  Hit play and join me on a journey through melodies, beats, and stories told through music.</p>
-                <div class="flex flex-wrap gap-4">
+            <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center relative z-10">
+              <div class="text-center md:text-left">
+                <p class="uppercase tracking-[0.3em] text-accent text-sm mb-4 sm:mb-5">Artist Profile</p>
+                <h3 class="text-4xl sm:text-5xl font-bold leading-tight mb-4 sm:mb-6">SHARMILAN.R</h3>
+                <p class="text-zinc-400 leading-relaxed text-base sm:text-lg mb-6 sm:mb-8">  Hit play and join me on a journey through melodies, beats, and stories told through music.</p>
+                <div class="flex flex-wrap justify-center md:justify-start gap-4">
                   <a href="https://open.spotify.com/artist/5bBOz5i5P5GIcB9NUiGTCk?si=lR5R__nETgGfa0lfT_VdcA" target="_blank" class="bg-green-500 hover:bg-green-400 transition px-7 py-3 rounded-full text-black font-medium">Listen on Spotify</a>
                 </div>
               </div>
               <div class="flex justify-center">
                 <div class="relative">
                   <div class="absolute inset-0 bg-accent blur-[100px] opacity-30"></div>
-                  <img src="spotify_pic.jpeg" class="relative z-10 w-[340px] h-[340px] rounded-[35px] object-cover border border-white/10"/>
+                  <img src="spotify_pic.jpeg" class="relative z-10 w-[260px] h-[260px] sm:w-[340px] sm:h-[340px] rounded-[30px] sm:rounded-[35px] object-cover border border-white/10"/>
                 </div>
               </div>
             </div>
@@ -525,14 +597,14 @@
     </section>
 
     <!-- CONTACT -->
-    <section id="contact" class="py-24 md:py-32">
+    <section id="contact" class="py-12 sm:py-24 md:py-32">
       <div class="max-w-5xl mx-auto px-5 sm:px-6">
-        <div class="card rounded-[30px] md:rounded-[40px] p-10 md:p-20 text-center relative overflow-hidden">
+        <div class="card rounded-[24px] sm:rounded-[40px] p-8 sm:p-20 text-center relative overflow-hidden">
           <div class="absolute top-0 right-0 w-80 h-80 bg-accent/20 rounded-full blur-3xl"></div>
-          <p class="uppercase tracking-[0.3em] text-accent text-sm mb-5 relative z-10">Contact</p>
-          <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-8 relative z-10">Let's Create together</h2>
-          <p class="text-zinc-400 text-lg leading-relaxed max-w-2xl mx-auto mb-12 relative z-10"> Open for film scoring, music production, trailer music, Independent songs and sound design projects.</p>
-          <div class="relative z-10 flex flex-col sm:flex-row justify-center gap-5">
+          <p class="uppercase tracking-[0.3em] text-accent text-sm mb-4 sm:mb-5 relative z-10">Contact</p>
+          <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-5 sm:mb-8 relative z-10">Let's Create together</h2>
+          <p class="text-zinc-400 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-7 sm:mb-12 relative z-10"> Open for film scoring, music production, trailer music, Independent songs and sound design projects.</p>
+          <div class="relative z-10 flex flex-col sm:flex-row justify-center gap-4 sm:gap-5">
             <a href="mailto:sharmilan2003spr@gmail.com" class="bg-accent hover:bg-accent-light transition px-8 py-4 rounded-full font-medium">Email Me</a>
             <a href="https://instagram.com/r_sharmilan" target="_blank" class="border border-zinc-700 hover:border-accent px-8 py-4 rounded-full transition">Instagram</a>
           </div>
@@ -541,7 +613,7 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="border-t border-white/5 py-10">
+    <footer class="border-t border-white/5 py-6 sm:py-10">
       <div class="max-w-7xl mx-auto px-5 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-5">
         <p class="text-zinc-500 text-sm text-center">© 2026 SHARMILAN.R — Music Producer & Composer</p>
         <p class="text-zinc-600 text-sm text-center">SR records ✨</p>
@@ -563,28 +635,30 @@
       }
     </script>
 
-    <!-- Slideshow (No Looping) -->
+    <!-- Slideshow (2 local videos, auto play/pause on switch, NO looping) -->
     <script>
       const TOTAL  = 2;
       const titles = ['Some Of My SFX Works', 'Background Score for this pilot film'];
 
-      const track    = document.getElementById('slidesTrack');
-      const viewport = document.getElementById('slideshowViewport');
-      const dots     = document.querySelectorAll('.dot');
-      const label    = document.getElementById('slideLabel');
-      const videos   = [document.getElementById('vid-0'), document.getElementById('vid-1')];
+      const track      = document.getElementById('slidesTrack');
+      const viewport   = document.getElementById('slideshowViewport');
+      const dots       = document.querySelectorAll('.dot');
+      const label      = document.getElementById('slideLabel');
+      const videos     = [document.getElementById('vid-0'), document.getElementById('vid-1')];
+      const arrowLeft  = document.getElementById('arrowLeft');
+      const arrowRight = document.getElementById('arrowRight');
+      const slides     = Array.from(track.querySelectorAll('.slide'));
 
-      let realIndex  = 0; 
-      
-      const allSlides = Array.from(track.querySelectorAll('.slide'));
+      let realIndex = 0; // 0..TOTAL-1, bounded — no wraparound
 
-      function slideWidth() { return allSlides[0].offsetWidth; }
+      /* ── 1. Position helpers ── */
+      function slideWidth() { return slides[0].offsetWidth; }
 
       function getOffset(index) {
         const vw = viewport.offsetWidth;
         const sw = slideWidth();
-        const center = (vw - sw) / 2;
-        return center - index * sw;
+        const centre = (vw - sw) / 2;
+        return centre - index * sw;
       }
 
       function applyOffset(animated) {
@@ -593,7 +667,7 @@
       }
 
       function updateSlideStates() {
-        allSlides.forEach((s, i) => s.classList.toggle('inactive', i !== realIndex));
+        slides.forEach((s, i) => s.classList.toggle('inactive', i !== realIndex));
       }
       function updateDots() {
         dots.forEach((d, i) => d.classList.toggle('active', i === realIndex));
@@ -602,16 +676,15 @@
         label.textContent = (realIndex + 1) + ' / ' + TOTAL + ' — ' + titles[realIndex];
       }
       function updateArrows() {
-        const arrowLeft = document.getElementById('arrowLeft');
-        const arrowRight = document.getElementById('arrowRight');
-        // Dim and disable left arrow if at start
-        arrowLeft.style.opacity = realIndex === 0 ? '0.3' : '1';
-        arrowLeft.style.pointerEvents = realIndex === 0 ? 'none' : 'auto';
-        // Dim and disable right arrow if at end
-        arrowRight.style.opacity = realIndex === TOTAL - 1 ? '0.3' : '1';
-        arrowRight.style.pointerEvents = realIndex === TOTAL - 1 ? 'none' : 'auto';
+        const atStart = realIndex === 0;
+        const atEnd   = realIndex === TOTAL - 1;
+        arrowLeft.style.opacity = atStart ? '0.3' : '1';
+        arrowLeft.style.pointerEvents = atStart ? 'none' : 'auto';
+        arrowRight.style.opacity = atEnd ? '0.3' : '1';
+        arrowRight.style.pointerEvents = atEnd ? 'none' : 'auto';
       }
 
+      /* ── 2. Play/pause control ── */
       function stopAllVideos() {
         videos.forEach(v => { if (v) { v.pause(); } });
       }
@@ -620,10 +693,27 @@
         if (v) { v.play().catch(() => {}); }
       }
 
-      function switchTo(newReal) {
-        if (newReal < 0 || newReal >= TOTAL) return; // Prevent going out of bounds
+      /* ── Cross-media coordination: pause every audio track whenever a video plays ── */
+      window.pauseAllVideos = stopAllVideos;
+      window.pauseAllTrackAudios = function () {
+        document.querySelectorAll('.track-item.playing').forEach(item => {
+          item.classList.remove('playing');
+          const b = item.querySelector('.track-play');
+          if (b) b.textContent = '▶';
+          if (item._audio) item._audio.pause();
+          if (item._resetBars) item._resetBars();
+        });
+      };
+      videos.forEach(v => {
+        if (!v) return;
+        v.addEventListener('play', () => window.pauseAllTrackAudios());
+      });
+
+      /* ── 3. Go to a specific slide (bounded, no wraparound) ── */
+      function goTo(index) {
+        if (index < 0 || index > TOTAL - 1 || index === realIndex) return;
         stopAllVideos();
-        realIndex = newReal;
+        realIndex = index;
         applyOffset(true);
         updateSlideStates();
         updateDots();
@@ -632,19 +722,21 @@
         playCurrent();
       }
 
-      function stepBy(dir) { switchTo(realIndex + dir); }
+      /* ── 4. Controls ── */
+      arrowLeft.addEventListener('click',  () => goTo(realIndex - 1));
+      arrowRight.addEventListener('click', () => goTo(realIndex + 1));
+      dots.forEach(dot => dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index))));
 
-      document.getElementById('arrowLeft').addEventListener('click',  () => stepBy(-1));
-      document.getElementById('arrowRight').addEventListener('click', () => stepBy(+1));
-      dots.forEach(dot => dot.addEventListener('click', () => switchTo(parseInt(dot.dataset.index))));
-
+      /* ── 5. Advance to the next slide when a video finishes (stops at the last one) ── */
       videos.forEach((v, i) => {
         if (!v) return;
-        v.addEventListener('ended', () => { if (i === realIndex) stepBy(+1); });
+        v.addEventListener('ended', () => { if (i === realIndex && realIndex < TOTAL - 1) goTo(realIndex + 1); });
       });
 
+      /* ── 6. Resize ── */
       window.addEventListener('resize', () => applyOffset(false));
 
+      /* ── 7. Init ── */
       function init() {
         applyOffset(false);
         updateSlideStates();
@@ -654,10 +746,13 @@
       }
       window.addEventListener('load', init);
       setTimeout(init, 120);
+
+      label.textContent = '1 / ' + TOTAL + ' — ' + titles[0];
     </script>
 
-    <!-- Preview Samples: REAL-TIME audio-reactive waveform bars -->
+    <!-- Preview Samples: REAL-TIME audio-reactive waveform bars (Web Audio API) -->
     <script>
+      // Build the bar elements for every waveform (start flat, they animate live once playing)
       document.querySelectorAll('.waveform').forEach(wf => {
         const barCount = 40;
         for (let i = 0; i < barCount; i++) {
@@ -667,6 +762,7 @@
         }
       });
 
+      // One shared AudioContext for the whole page (browsers limit how many you can create)
       let audioCtx = null;
       function getAudioCtx() {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -686,7 +782,7 @@
           const ctx = getAudioCtx();
           source = ctx.createMediaElementSource(audio);
           analyser = ctx.createAnalyser();
-          analyser.fftSize = 128; 
+          analyser.fftSize = 128; // 64 frequency bins — plenty for 40 visual bars
           dataArray = new Uint8Array(analyser.frequencyBinCount);
           source.connect(analyser);
           analyser.connect(ctx.destination);
@@ -695,8 +791,8 @@
         function animateBars() {
           analyser.getByteFrequencyData(dataArray);
           bars.forEach((bar, i) => {
-            const value = dataArray[i % dataArray.length];
-            const height = 4 + (value / 255) * 26;
+            const value = dataArray[i % dataArray.length]; // 0-255
+            const height = 4 + (value / 255) * 26; // 4px min, 30px max
             bar.style.height = height + 'px';
           });
           currentAnimFrame = requestAnimationFrame(animateBars);
@@ -707,6 +803,7 @@
         }
 
         btn.addEventListener('click', () => {
+          // stop every other currently playing track first
           document.querySelectorAll('.track-item.playing').forEach(other => {
             if (other !== item) {
               other.classList.remove('playing');
@@ -740,6 +837,7 @@
             cancelAnimationFrame(currentAnimFrame);
             resetBars();
           } else {
+            if (window.pauseAllVideos) window.pauseAllVideos();
             audio.play().catch(() => {});
             item.classList.add('playing');
             btn.textContent = '❚❚';
